@@ -1,0 +1,20 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# A global gitignore may ignore /src/; ensure our source stays tracked
+!/src/
+
+# Large generated basemap cutouts (run `npm run fetch:tiles`)
+/data/tiles/*.pmtiles
+
+# Generated MapLibre worker assets (scripts/copy-maplibre-worker.mjs)
+/data/maplibre-gl-worker.mjs
+/data/maplibre-gl-shared.mjs
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

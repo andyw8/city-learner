@@ -1,0 +1,146 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1a1a1a;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+header p {
+  flex: 1;
+  margin: 0;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+#app main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#map {
+  flex: 1;
+  min-height: 0;
+}
+
+#panel {
+  width: 340px;
+  padding: 1rem;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+#panel h2 {
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.options {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.options button {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.options button:hover:not(:disabled) {
+  background: #f0f4ff;
+}
+
+.options button:disabled {
+  cursor: default;
+}
+
+.options button.correct {
+  border-color: #2a9d2a;
+  background: #e7f6e7;
+}
+
+.options button.wrong {
+  border-color: #d33;
+  background: #fdecec;
+}
+
+.feedback {
+  min-height: 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.next {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modes {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.modes button {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modes button.active {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+
+.prompt-description {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}

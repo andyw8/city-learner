@@ -1,0 +1,195 @@
+{
+  "city": "Toronto, Ontario, Canada",
+  "version": 1,
+  "features": [
+    {
+      "id": "osm:node/cn-tower",
+      "name": "CN Tower",
+      "aliases": ["The CN Tower"],
+      "category": "landmark",
+      "description": "A 553 m concrete communications and observation tower on the downtown waterfront and a symbol of the city.",
+      "geometry": { "type": "Point", "coordinates": [-79.3871, 43.6426] },
+      "toleranceM": 150
+    },
+    {
+      "id": "osm:way/royal-ontario-museum",
+      "name": "Royal Ontario Museum",
+      "aliases": ["ROM"],
+      "category": "landmark",
+      "description": "Canada's largest museum of art, culture and natural history, marked by the angular glass Crystal addition on Bloor Street.",
+      "geometry": { "type": "Point", "coordinates": [-79.3948, 43.6677] }
+    },
+    {
+      "id": "osm:way/casa-loma",
+      "name": "Casa Loma",
+      "aliases": [],
+      "category": "landmark",
+      "description": "A Gothic Revival mansion built for financier Sir Henry Pellatt, now a museum and event venue on a hill north of downtown.",
+      "geometry": { "type": "Point", "coordinates": [-79.4094, 43.6781] }
+    },
+    {
+      "id": "osm:way/st-lawrence-market",
+      "name": "St. Lawrence Market",
+      "aliases": [],
+      "category": "landmark",
+      "description": "A historic public market in the Old Town area, with the South Market dating to 1845.",
+      "geometry": { "type": "Point", "coordinates": [-79.3716, 43.6487] }
+    },
+    {
+      "id": "osm:relation/lake-ontario",
+      "name": "Lake Ontario",
+      "aliases": [],
+      "category": "water",
+      "description": "The Great Lake forming Toronto's southern waterfront; the city's harbour is sheltered behind the Toronto Islands.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-79.63, 43.63],
+            [-79.2, 43.63],
+            [-79.2, 43.55],
+            [-79.63, 43.55],
+            [-79.63, 43.63]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/humber-river",
+      "name": "Humber River",
+      "aliases": [],
+      "category": "water",
+      "description": "A river flowing south through the city's west end into Lake Ontario, flanked by the Humber River recreational trail.",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-79.475, 43.639],
+          [-79.487, 43.66],
+          [-79.505, 43.69],
+          [-79.52, 43.72]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/don-river",
+      "name": "Don River",
+      "aliases": ["The Don"],
+      "category": "water",
+      "description": "A river crossing the city's east end, meeting the harbour at the Don River mouth near the Port Lands.",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-79.365, 43.645],
+          [-79.358, 43.67],
+          [-79.35, 43.7],
+          [-79.34, 43.73]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/yonge-street",
+      "name": "Yonge Street",
+      "aliases": [],
+      "category": "road",
+      "description": "The city's main north-south spine and the traditional dividing line between east and west street numbering.",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-79.379, 43.64],
+          [-79.383, 43.665],
+          [-79.388, 43.69],
+          [-79.395, 43.715],
+          [-79.41, 43.76]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/highway-401",
+      "name": "Highway 401",
+      "aliases": ["401", "The 401", "King's Highway 401", "Macdonald–Cartier Freeway"],
+      "category": "road",
+      "description": "The main east-west freeway across the top of the city, one of the busiest highways in North America.",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-79.54, 43.71],
+          [-79.45, 43.72],
+          [-79.35, 43.735],
+          [-79.25, 43.755]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/bloor-street",
+      "name": "Bloor Street",
+      "aliases": [],
+      "category": "road",
+      "description": "A major east-west street just north of downtown, home to the Mink Mile shopping district.",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-79.47, 43.66],
+          [-79.4, 43.665],
+          [-79.34, 43.67]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/kensington-market",
+      "name": "Kensington Market",
+      "aliases": [],
+      "category": "neighbourhood",
+      "description": "A bohemian downtown neighbourhood of narrow streets, vintage shops and food markets, west of Spadina Avenue.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-79.4055, 43.6525],
+            [-79.3985, 43.6525],
+            [-79.3985, 43.657],
+            [-79.4055, 43.657],
+            [-79.4055, 43.6525]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/distillery-district",
+      "name": "Distillery District",
+      "aliases": [],
+      "category": "neighbourhood",
+      "description": "A pedestrian-only heritage district of Victorian industrial buildings east of downtown, now galleries, shops and restaurants.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-79.3605, 43.649],
+            [-79.357, 43.649],
+            [-79.357, 43.6515],
+            [-79.3605, 43.6515],
+            [-79.3605, 43.649]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "osm:way/liberty-village",
+      "name": "Liberty Village",
+      "aliases": [],
+      "category": "neighbourhood",
+      "description": "A former industrial area in the west end converted into a dense residential and tech-office neighbourhood.",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-79.42, 43.6375],
+            [-79.414, 43.6375],
+            [-79.414, 43.6415],
+            [-79.42, 43.6415],
+            [-79.42, 43.6375]
+          ]
+        ]
+      }
+    }
+  ]
+}
