@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFAULT_CITY } from './deck/cities'
 import { DEFAULT_TOLERANCE_M } from './deck/distance'
 import { CATEGORIES } from './deck/types'
 import { db } from './db/schema'
@@ -16,6 +17,7 @@ export const settingsSchema = z.object({
   newLimit: z.number().int().min(0).max(500),
   tolerances: z.record(z.enum(CATEGORIES), z.number().positive()),
   identifyMode: z.enum(IDENTIFY_MODES).default('free-text'),
+  city: z.string().min(1).default(DEFAULT_CITY.id),
 })
 
 export type Settings = z.output<typeof settingsSchema>
@@ -26,6 +28,7 @@ export const DEFAULT_SETTINGS: Settings = {
   newLimit: DEFAULT_NEW_LIMIT,
   tolerances: DEFAULT_TOLERANCE_M,
   identifyMode: 'free-text',
+  city: DEFAULT_CITY.id,
 }
 
 const SETTINGS_KEY = 'settings'

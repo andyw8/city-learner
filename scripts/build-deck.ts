@@ -16,8 +16,11 @@ import { candidateFromElement, type Candidate } from './lib/normalise.ts'
 import { bboxToOverpass, buildQuery, fetchElements, type OsmElement } from './lib/overpass.ts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const configPath = resolve(root, 'scripts/curate/toronto.yaml')
-const outputPath = resolve(root, 'data/decks/toronto.json')
+const args = process.argv.slice(2)
+const refresh = args.includes('--refresh')
+const cityId = args.find((arg) => !arg.startsWith('--')) ?? 'toronto'
+const configPath = resolve(root, `scripts/curate/${cityId}.yaml`)
+const outputPath = resolve(root, `data/decks/${cityId}.json`)
 const cacheDir = resolve(root, 'scripts/.cache')
 
 const categoryRuleSchema = z.object({
@@ -30,6 +33,7 @@ const categoryRuleSchema = z.object({
 
 const curationSchema = z.object({
   city: z.string().min(1),
+  name: z.string().min(1),
   version: z.number().int().positive(),
   endpoints: z.array(z.string().min(1)).min(1),
   area: z.number().int().positive().optional(),
@@ -48,7 +52,7 @@ function loadCuration(): Curation {
 
 function cachePath(category: Category, query: string): string {
   const hash = createHash('sha256').update(query).digest('hex').slice(0, 12)
-  return resolve(cacheDir, `toronto-${category}-${hash}.json`)
+  return resolve(cacheDir, `${cityId}-${category}-${hash}.json`)
 }
 
 async function loadElements(
@@ -74,13 +78,13 @@ async function loadElements(
 }
 
 async function main(): Promise<void> {
-  const refresh = process.argv.includes('--refresh')
   const curation = loadCuration()
 
   const options = {
     precision: curation.precision,
     simplifyToleranceM: curation.simplifyToleranceM,
     bbox: curation.bbox,
+    cityName: curation.name,
   }
 
   const collected: Candidate[] = []
@@ -122,6 +126,7 @@ async function main(): Promise<void> {
   const { features, unmatched } = applyManual(
     collected.map((candidate) => candidate.feature),
     curation.manual,
+    curation.name,
   )
 
   if (missingInclude.length > 0) {

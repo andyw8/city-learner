@@ -3,6 +3,7 @@ import type { Mode } from '../deck/types'
 
 export interface Card extends FsrsCard {
   id: string
+  city: string
   featureId: string
   mode: Mode
 }

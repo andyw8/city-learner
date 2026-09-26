@@ -3,8 +3,14 @@ import { db } from '../db/schema'
 import { newCard, review } from './scheduler'
 import { cardId, type Card } from './types'
 
-export async function syncCards(deck: Deck, now: Date = new Date()): Promise<void> {
-  const existing = new Set((await db.cards.toArray()).map((card) => card.id))
+export async function syncCards(
+  city: string,
+  deck: Deck,
+  now: Date = new Date(),
+): Promise<void> {
+  const existing = new Set(
+    (await db.cards.where('city').equals(city).toArray()).map((card) => card.id),
+  )
   const validIds = new Set<string>()
   const missing: Card[] = []
 
@@ -12,7 +18,7 @@ export async function syncCards(deck: Deck, now: Date = new Date()): Promise<voi
     for (const mode of MODES) {
       const id = cardId(feature.id, mode)
       validIds.add(id)
-      if (!existing.has(id)) missing.push(newCard(feature, mode, now))
+      if (!existing.has(id)) missing.push(newCard(feature, mode, now, city))
     }
   }
 
@@ -25,8 +31,8 @@ export async function syncCards(deck: Deck, now: Date = new Date()): Promise<voi
   })
 }
 
-export async function loadCards(): Promise<Card[]> {
-  return db.cards.toArray()
+export async function loadCards(city: string): Promise<Card[]> {
+  return db.cards.where('city').equals(city).toArray()
 }
 
 export async function applyReview(

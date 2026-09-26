@@ -6,7 +6,7 @@ dist
 # A global gitignore may ignore /src/; ensure our source stays tracked
 !/src/
 
-# Large generated basemap cutouts (run `npm run fetch:tiles`)
+# Legacy local PMTiles cutouts (basemap is now hosted; kept ignored)
 /data/tiles/*.pmtiles
 
 # Generated MapLibre worker assets (scripts/copy-maplibre-worker.mjs)

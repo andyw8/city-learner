@@ -6,6 +6,7 @@ const options: NormaliseOptions = {
   precision: 6,
   simplifyToleranceM: 1,
   bbox: [-80, 43, -79, 44],
+  cityName: 'Toronto',
   stripDirectional: true,
 }
 

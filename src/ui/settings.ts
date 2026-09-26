@@ -70,6 +70,7 @@ export async function renderSettings(
       newLimit: Number(newLimit.value),
       tolerances,
       identifyMode: identifyMode.value as Settings['identifyMode'],
+      city: settings.city,
     })
   })
 

@@ -21,6 +21,7 @@ describe('settings', () => {
       newLimit: 25,
       tolerances: { ...DEFAULT_TOLERANCE_M, road: 100 },
       identifyMode: 'multiple-choice' as const,
+      city: 'glasgow',
     }
     await saveSettings(settings)
     expect(await loadSettings()).toEqual(settings)

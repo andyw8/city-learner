@@ -1,27 +1,43 @@
-import { describe, expect, it } from 'vitest'
-import { BASEMAP_SOURCE, basemapStyle } from '../../src/map/style'
+import type { StyleSpecification } from 'maplibre-gl'
+import { describe, expect, it, vi } from 'vitest'
+import { BASEMAP_STYLE_URL, basemapStyle, hideLabels } from '../../src/map/style'
+
+const style = {
+  version: 8,
+  sources: {},
+  layers: [
+    { id: 'background', type: 'background' },
+    { id: 'place-labels', type: 'symbol', source: 'base', layout: { visibility: 'visible' } },
+  ],
+} as unknown as StyleSpecification
+
+describe('hideLabels', () => {
+  it('hides symbol layers and leaves other layers alone', () => {
+    const hidden = hideLabels(style)
+    expect(hidden.layers.find((layer) => layer.id === 'place-labels')?.layout?.visibility).toBe(
+      'none',
+    )
+    expect(hidden.layers.find((layer) => layer.id === 'background')?.layout?.visibility).toBe(
+      undefined,
+    )
+  })
+})
 
 describe('basemapStyle', () => {
-  it('includes label layers, all hidden by default', () => {
-    const symbols = basemapStyle().layers.filter((layer) => layer.type === 'symbol')
+  it('fetches the hosted style and hides its labels', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify(style), { status: 200 }))
+    const result = await basemapStyle(fetchImpl as unknown as typeof fetch)
 
-    expect(symbols.length).toBeGreaterThan(0)
-    for (const layer of symbols) {
-      expect(layer.layout?.visibility).toBe('none')
-    }
+    expect(fetchImpl).toHaveBeenCalledWith(BASEMAP_STYLE_URL)
+    expect(result.layers.find((layer) => layer.id === 'place-labels')?.layout?.visibility).toBe(
+      'none',
+    )
   })
 
-  it('provides glyphs and a sprite so labels can be shown', () => {
-    const style = basemapStyle()
-    expect(style.glyphs).toContain('{fontstack}')
-    expect(style.sprite).toBeTruthy()
-  })
-
-  it('uses the local PMTiles basemap source', () => {
-    const source = basemapStyle().sources[BASEMAP_SOURCE]
-    expect(source).toMatchObject({
-      type: 'vector',
-      url: 'pmtiles:///tiles/toronto.pmtiles',
-    })
+  it('throws on an error response', async () => {
+    const fetchImpl = vi.fn(async () => new Response('nope', { status: 500 }))
+    await expect(basemapStyle(fetchImpl as unknown as typeof fetch)).rejects.toThrow(
+      'Failed to load basemap style: 500',
+    )
   })
 })

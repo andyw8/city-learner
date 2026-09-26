@@ -21,6 +21,7 @@ export interface CategoryRule {
 
 export interface Curation {
   city: string
+  name: string
   version: number
   endpoints: string[]
   area?: number
@@ -174,7 +175,11 @@ export interface ManualResult {
   unmatched: string[]
 }
 
-export function applyManual(features: Feature[], manual: ManualEntry[]): ManualResult {
+export function applyManual(
+  features: Feature[],
+  manual: ManualEntry[],
+  cityName: string,
+): ManualResult {
   const result = features.map((feature) => ({ ...feature, aliases: [...feature.aliases] }))
   const unmatched: string[] = []
 
@@ -185,7 +190,7 @@ export function applyManual(features: Feature[], manual: ManualEntry[]): ManualR
         name: entry.name,
         aliases: entry.aliases ?? [],
         category: entry.category,
-        description: entry.description ?? describe(entry.category, {}),
+        description: entry.description ?? describe(entry.category, {}, cityName),
         ...(entry.noun !== undefined ? { noun: entry.noun } : {}),
         geometry: entry.geometry,
         ...(entry.toleranceM !== undefined ? { toleranceM: entry.toleranceM } : {}),

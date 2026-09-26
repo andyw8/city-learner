@@ -2,6 +2,7 @@
 # data/decks/toronto.json from OpenStreetMap via Overpass.
 
 city: Toronto, Ontario, Canada
+name: Toronto
 version: 1
 
 endpoints:

@@ -26,6 +26,7 @@ export interface NormaliseOptions {
   precision: number
   simplifyToleranceM: number
   bbox: BBox
+  cityName: string
   stripDirectional?: boolean
 }
 
@@ -90,8 +91,12 @@ export function featureKind(category: Category, tags: Record<string, string>): s
   }
 }
 
-export function describe(category: Category, tags: Record<string, string>): string {
-  return `A ${featureKind(category, tags)} in Toronto.`
+export function describe(
+  category: Category,
+  tags: Record<string, string>,
+  cityName: string,
+): string {
+  return `A ${featureKind(category, tags)} in ${cityName}.`
 }
 
 function geometryFromCoords(coords: Position[], category: Category): Geometry | null {
@@ -172,7 +177,7 @@ export function candidateFromElement(
     name,
     aliases: [],
     category,
-    description: describe(category, element.tags ?? {}),
+    description: describe(category, element.tags ?? {}, options.cityName),
     noun: featureKind(category, element.tags ?? {}),
     geometry,
     osmId: `${element.type}/${element.id}`,

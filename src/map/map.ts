@@ -1,27 +1,24 @@
-import { Map as MapLibreMap, NavigationControl, addProtocol, setWorkerUrl } from 'maplibre-gl'
+import { Map as MapLibreMap, NavigationControl, setWorkerUrl } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { createPmtilesProtocol } from './pmtiles'
+import type { City } from '../deck/cities'
 import { basemapStyle } from './style'
-
-export const TORONTO_CENTER: [number, number] = [-79.3832, 43.6532]
 
 let configured = false
 
 function configureMaplibre(): void {
   if (configured) return
-  addProtocol('pmtiles', createPmtilesProtocol().tile)
   setWorkerUrl(`${import.meta.env.BASE_URL}maplibre-gl-worker.mjs`)
   configured = true
 }
 
-export function createMap(container: HTMLElement): MapLibreMap {
+export async function createMap(container: HTMLElement, city: City): Promise<MapLibreMap> {
   configureMaplibre()
 
   const map = new MapLibreMap({
     container,
-    style: basemapStyle(),
-    center: TORONTO_CENTER,
-    zoom: 11,
+    style: await basemapStyle(),
+    center: city.center,
+    zoom: city.zoom,
     minZoom: 9,
     maxZoom: 17,
   })

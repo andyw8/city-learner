@@ -16,8 +16,9 @@ const now = new Date('2026-09-26T12:00:00Z')
 
 describe('newCard', () => {
   it('creates a new card keyed by feature and mode', () => {
-    const card = newCard(feature, 'identify', now)
+    const card = newCard(feature, 'identify', now, 'toronto')
     expect(card.id).toBe('osm:node/x:identify')
+    expect(card.city).toBe('toronto')
     expect(card.featureId).toBe('osm:node/x')
     expect(card.mode).toBe('identify')
     expect(card.state).toBe(State.New)
@@ -27,19 +28,20 @@ describe('newCard', () => {
 
 describe('review', () => {
   it('advances a correct card and keeps its identity', () => {
-    const card = newCard(feature, 'locate', now)
+    const card = newCard(feature, 'locate', now, 'toronto')
     const next = review(card, true, now)
 
     expect(next.reps).toBe(1)
     expect(next.state).toBe(State.Learning)
     expect(next.id).toBe(card.id)
+    expect(next.city).toBe('toronto')
     expect(next.featureId).toBe('osm:node/x')
     expect(next.mode).toBe('locate')
     expect(next.due.getTime()).toBeGreaterThan(now.getTime())
   })
 
   it('schedules an incorrect card no later than a correct one', () => {
-    const card = newCard(feature, 'identify', now)
+    const card = newCard(feature, 'identify', now, 'toronto')
     expect(review(card, false, now).due.getTime()).toBeLessThanOrEqual(
       review(card, true, now).due.getTime(),
     )

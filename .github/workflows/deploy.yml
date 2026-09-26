@@ -14,10 +14,6 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
-env:
-  # Protomaps daily build to cut the basemap from. Pinned for reproducible builds.
-  BUILD: '20260926'
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,12 +24,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - uses: actions/cache@v4
-        with:
-          path: data/tiles
-          key: pmtiles-toronto-${{ env.BUILD }}
-      - name: Fetch basemap tiles
-        run: npm run fetch:tiles
       - name: Build
         run: npm run build
         env:

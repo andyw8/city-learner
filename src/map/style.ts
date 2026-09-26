@@ -1,38 +1,25 @@
-import { layers, namedFlavor } from '@protomaps/basemaps'
-import type { LayerSpecification, StyleSpecification } from 'maplibre-gl'
+import type { StyleSpecification } from 'maplibre-gl'
 
-export const BASEMAP_SOURCE = 'protomaps'
+export const BASEMAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/bright'
 
-export const BASEMAP_URL = `${import.meta.env.BASE_URL}tiles/toronto.pmtiles`
-
-export const BASEMAP_ATTRIBUTION =
-  '<a href="https://protomaps.com">Protomaps</a> · <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>'
-
-const GLYPHS_URL =
-  'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf'
-
-const SPRITE_URL = 'https://protomaps.github.io/basemaps-assets/sprites/v4/light'
-
-export function basemapLayers(): LayerSpecification[] {
-  return layers(BASEMAP_SOURCE, namedFlavor('light'), { lang: 'en' }).map((layer) =>
-    layer.type === 'symbol'
-      ? { ...layer, layout: { ...layer.layout, visibility: 'none' } }
-      : layer,
-  )
+/** Hide every label layer so the map can be answered from shape alone. */
+export function hideLabels(style: StyleSpecification): StyleSpecification {
+  return {
+    ...style,
+    layers: style.layers.map((layer) =>
+      layer.type === 'symbol'
+        ? { ...layer, layout: { ...layer.layout, visibility: 'none' as const } }
+        : layer,
+    ),
+  }
 }
 
-export function basemapStyle(): StyleSpecification {
-  return {
-    version: 8,
-    glyphs: GLYPHS_URL,
-    sprite: SPRITE_URL,
-    sources: {
-      [BASEMAP_SOURCE]: {
-        type: 'vector',
-        url: `pmtiles://${BASEMAP_URL}`,
-        attribution: BASEMAP_ATTRIBUTION,
-      },
-    },
-    layers: basemapLayers(),
+export async function basemapStyle(
+  fetchImpl: typeof fetch = (input, init) => globalThis.fetch(input, init),
+): Promise<StyleSpecification> {
+  const response = await fetchImpl(BASEMAP_STYLE_URL)
+  if (!response.ok) {
+    throw new Error(`Failed to load basemap style: ${response.status}`)
   }
+  return hideLabels((await response.json()) as StyleSpecification)
 }

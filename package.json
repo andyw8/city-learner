@@ -14,14 +14,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "build:deck": "tsx scripts/build-deck.ts",
-    "fetch:tiles": "bash scripts/fetch-tiles.sh"
+    "build:deck": "tsx scripts/build-deck.ts"
   },
   "dependencies": {
-    "@protomaps/basemaps": "^5.7.2",
     "dexie": "^4.4.6",
     "maplibre-gl": "^6.11.2",
-    "pmtiles": "^4.5.0",
     "ts-fsrs": "^5.4.2",
     "zod": "^4.6.5"
   },

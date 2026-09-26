@@ -17,6 +17,15 @@ test('app boots and loads the Toronto deck', async ({ page }) => {
   await expect(page.getByText(/Toronto, Ontario, Canada — \d+ features/)).toBeVisible()
 })
 
+test('switching city loads that city deck', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  await page.selectOption('#city-select', 'glasgow')
+  await page.waitForFunction(() => window.cityLearner?.deck?.city.startsWith('Glasgow'))
+  await expect(page.getByText(/Glasgow, Scotland — \d+ features/)).toBeVisible()
+})
+
 test('renders the basemap with no labels visible', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.map.isStyleLoaded() === true)

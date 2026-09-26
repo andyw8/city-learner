@@ -1,0 +1,132 @@
+# Curation for the Glasgow deck. Run `npm run build:deck -- glasgow` to
+# regenerate data/decks/glasgow.json from OpenStreetMap via Overpass.
+
+city: Glasgow, Scotland
+name: Glasgow
+version: 1
+
+endpoints:
+  - https://overpass-api.de/api/interpreter
+  - https://overpass.kumi.systems/api/interpreter
+
+# Glasgow City council area (OSM relation 1906767; area = 3600000000 + id).
+area: 3601906767
+
+# minLng, minLat, maxLng, maxLat — used only if `area` is omitted.
+bbox: [-4.4, 55.77, -4.06, 55.94]
+
+precision: 6
+# Douglas-Peucker tolerance in metres.
+simplifyToleranceM: 25
+
+categories:
+  road:
+    query: |
+      way[highway~"^(motorway|trunk|primary|secondary)$"][name](${scope});
+    merge: longest-line
+    stripDirectional: true
+    minLengthM: 1200
+    max: 50
+
+  neighbourhood:
+    query: |
+      node[place~"^(suburb|neighbourhood|quarter)$"][name](${scope});
+    merge: first-with-wikidata
+    max: 80
+
+  water:
+    query: |
+      way[waterway~"^(river|canal|stream)$"][name](${scope});
+      way[natural~"^(water|bay)$"][name](${scope});
+    merge: largest-area
+    max: 30
+
+  landmark:
+    query: |
+      node[tourism~"^(attraction|museum|gallery|viewpoint|aquarium|zoo|theme_park)$"][name](${scope});
+      way[tourism~"^(attraction|museum|gallery|viewpoint|aquarium|zoo|theme_park)$"][name](${scope});
+      node[leisure=stadium][name](${scope});
+      way[leisure=stadium][name](${scope});
+      node[man_made~"^(tower|water_tower)$"][name](${scope});
+      way[man_made=tower][name](${scope});
+      node[amenity=marketplace][name](${scope});
+      way[amenity=marketplace][name](${scope});
+      node[historic~"^(castle|monument|memorial)$"][name](${scope});
+      way[historic~"^(castle|monument|memorial)$"][name](${scope});
+    merge: largest-area
+    max: 80
+
+exclude:
+  road: []
+  neighbourhood: []
+  water: []
+  landmark: []
+
+include:
+  road:
+    - Argyle Street
+    - Great Western Road
+    - Byres Road
+    - Dumbarton Road
+    - Paisley Road
+    - Gallowgate
+    - London Road
+    - Crown Street
+    - Maryhill Road
+    - Springburn Road
+    - Pollokshaws Road
+    - Duke Street
+    - Alexandra Parade
+    - Clydeside Expressway
+  neighbourhood:
+    - Finnieston
+    - Partick
+    - Govan
+    - Dennistoun
+    - Shawlands
+    - Hillhead
+    - Springburn
+    - Maryhill
+    - Pollokshields
+    - Bridgeton
+    - Anderston
+    - Merchant City
+    - Kelvinside
+    - Whiteinch
+    - Ibrox
+    - Strathbungo
+    - Battlefield
+    - Cathcart
+    - Woodlands
+    - Yorkhill
+    - Townhead
+    - Cowcaddens
+  water:
+    - River Clyde
+    - Forth and Clyde Canal
+    - River Kelvin
+    - White Cart Water
+  landmark:
+    - Kelvingrove Art Gallery and Museum
+    - Hampden Park
+    - Celtic Park
+    - Ibrox Stadium
+    - Gallery of Modern Art
+    - People's Palace
+    - Provand's Lordship
+    - The Burrell Collection
+    - Glasgow Tower
+    - The Lighthouse
+
+# Entries with geometry are added as standalone features. Entries without
+# geometry patch the matching generated feature (by name) with a description,
+# noun, aliases or a custom tolerance.
+manual:
+  - name: River Clyde
+    category: water
+    noun: river
+    description: The river that runs through the centre of Glasgow, once the engine of its shipbuilding trade and now lined with the waterfront and the Clyde Arc.
+
+  - name: Great Western Road
+    category: road
+    description: A long west-end arterial running from the city centre through Kelvinbridge and Anniesland.

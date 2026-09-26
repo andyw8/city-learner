@@ -29,7 +29,7 @@ const deck = parseDeck({
 })
 
 function card(id: string, featureId: string, mode: Mode, overrides: Partial<Card> = {}): Card {
-  return { ...createEmptyCard(now), id, featureId, mode, ...overrides }
+  return { ...createEmptyCard(now), id, city: 'test', featureId, mode, ...overrides }
 }
 
 describe('summarize', () => {

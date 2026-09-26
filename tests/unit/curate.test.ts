@@ -109,34 +109,48 @@ describe('applyManual', () => {
   }
 
   it('patches a generated feature by name', () => {
-    const { features, unmatched } = applyManual([base], [
-      { name: 'Bloor Street', category: 'road', description: 'Mink Mile.', aliases: ['Bloor'] },
-    ])
+    const { features, unmatched } = applyManual(
+      [base],
+      [{ name: 'Bloor Street', category: 'road', description: 'Mink Mile.', aliases: ['Bloor'] }],
+      'Toronto',
+    )
     expect(features[0]?.description).toBe('Mink Mile.')
     expect(features[0]?.aliases).toEqual(['Bloor'])
     expect(unmatched).toEqual([])
   })
 
   it('adds a manual feature with geometry', () => {
-    const { features } = applyManual([base], [
-      {
-        name: 'Lake Ontario',
-        category: 'water',
-        noun: 'lake',
-        geometry: { type: 'Point', coordinates: [-79.38, 43.6] },
-      },
-    ])
+    const { features } = applyManual(
+      [base],
+      [
+        {
+          name: 'Lake Ontario',
+          category: 'water',
+          noun: 'lake',
+          geometry: { type: 'Point', coordinates: [-79.38, 43.6] },
+        },
+      ],
+      'Toronto',
+    )
     expect(features.map((feature) => feature.name)).toContain('Lake Ontario')
     expect(features.find((feature) => feature.name === 'Lake Ontario')?.noun).toBe('lake')
   })
 
   it('patches a generated feature noun by name', () => {
-    const { features } = applyManual([base], [{ name: 'Bloor Street', category: 'road', noun: 'thoroughfare' }])
+    const { features } = applyManual(
+      [base],
+      [{ name: 'Bloor Street', category: 'road', noun: 'thoroughfare' }],
+      'Toronto',
+    )
     expect(features[0]?.noun).toBe('thoroughfare')
   })
 
   it('reports manual entries that match nothing', () => {
-    const { unmatched } = applyManual([base], [{ name: 'Ghost Road', category: 'road', description: 'x' }])
+    const { unmatched } = applyManual(
+      [base],
+      [{ name: 'Ghost Road', category: 'road', description: 'x' }],
+      'Toronto',
+    )
     expect(unmatched).toEqual(['Ghost Road'])
   })
 })

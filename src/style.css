@@ -47,6 +47,14 @@ header p {
   font-size: 0.85rem;
 }
 
+#city-select {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.9rem;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
 #app main {
   flex: 1;
   display: flex;
@@ -297,7 +305,12 @@ header p {
   .answer-mode button,
   .free-text input,
   .next,
-  .settings button {
+  .settings button,
+  #city-select {
     min-height: 44px;
+  }
+
+  #city-select {
+    font-size: 1rem;
   }
 }

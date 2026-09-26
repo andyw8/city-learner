@@ -1,3 +1,4 @@
+import { CITIES, findCity } from './deck/cities'
 import { featureById, loadDeck } from './deck/load'
 import type { Mode } from './deck/types'
 import { addGuessLayer, addHighlightLayers, clearGuess, clearHighlight } from './map/highlight'
@@ -16,6 +17,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
   root.innerHTML = `
     <header>
       <h1>City Learner</h1>
+      <select id="city-select" aria-label="City"></select>
       <p id="deck-label"></p>
       <nav class="modes">
         <button type="button" data-action="review">Review</button>
@@ -34,15 +36,28 @@ export async function startApp(root: HTMLElement): Promise<void> {
   const mapContainer = root.querySelector<HTMLDivElement>('#map')
   const panel = root.querySelector<HTMLElement>('#panel')
   const deckLabel = root.querySelector<HTMLParagraphElement>('#deck-label')
+  const citySelect = root.querySelector<HTMLSelectElement>('#city-select')
   const actionButtons = root.querySelectorAll<HTMLButtonElement>('.modes button')
-  if (!mapContainer || !panel || !deckLabel) throw new Error('Missing layout elements')
-
-  const deck = await loadDeck(`${import.meta.env.BASE_URL}decks/toronto.json`)
-  deckLabel.textContent = `${deck.city} — ${deck.features.length} features`
+  if (!mapContainer || !panel || !deckLabel || !citySelect) {
+    throw new Error('Missing layout elements')
+  }
 
   let settings = await loadSettings()
+  const city = findCity(settings.city)
 
-  const map = createMap(mapContainer)
+  for (const entry of CITIES) {
+    citySelect.append(new Option(entry.label, entry.id))
+  }
+  citySelect.value = city.id
+  citySelect.addEventListener('change', () => {
+    settings = { ...settings, city: citySelect.value }
+    void saveSettings(settings).then(() => window.location.reload())
+  })
+
+  const deck = await loadDeck(`${import.meta.env.BASE_URL}decks/${city.deck}`)
+  deckLabel.textContent = `${deck.city} — ${deck.features.length} features`
+
+  const map = await createMap(mapContainer, city)
   window.cityLearner = { map, deck }
 
   const features = featureById(deck)
@@ -70,8 +85,8 @@ export async function startApp(root: HTMLElement): Promise<void> {
   }
 
   const startReview = async (mode?: Mode): Promise<void> => {
-    await syncCards(deck)
-    const cards = await loadCards()
+    await syncCards(city.id, deck)
+    const cards = await loadCards(city.id)
     const items: ReviewItem[] = buildQueue(cards, {
       now: new Date(),
       mode,
@@ -110,7 +125,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
 
   const startProgress = (): void => {
     startPanelView()
-    void renderDashboard(panel, deck)
+    void renderDashboard(panel, deck, city.id)
   }
 
   const startPractice = (mode: Mode): void => {

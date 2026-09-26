@@ -3,8 +3,12 @@ import { summarize } from '../srs/stats'
 import { loadCards } from '../srs/store'
 import { el, statTile } from './dom'
 
-export async function renderDashboard(panel: HTMLElement, deck: Deck): Promise<void> {
-  const cards = await loadCards()
+export async function renderDashboard(
+  panel: HTMLElement,
+  deck: Deck,
+  city: string,
+): Promise<void> {
+  const cards = await loadCards(city)
   const stats = summarize(deck, cards, new Date())
 
   const totals = el('div', { className: 'stats' }, [
