@@ -35,4 +35,17 @@ describe('HttpRangeSource', () => {
     const source = sourceWith(() => new Response('nope', { status: 500 }))
     await expect(source.getBytes(0, 4)).rejects.toThrow('Bad response code: 500')
   })
+
+  it('fetches the whole archive once when the host ignores ranges', async () => {
+    let calls = 0
+    const source = new HttpRangeSource('/tiles/toronto.pmtiles', async () => {
+      calls++
+      return new Response(full, { status: 200 })
+    })
+    const first = await source.getBytes(2, 4)
+    const second = await source.getBytes(4, 2)
+    expect([...new Uint8Array(first.data)]).toEqual([2, 3, 4, 5])
+    expect([...new Uint8Array(second.data)]).toEqual([4, 5])
+    expect(calls).toBe(1)
+  })
 })
