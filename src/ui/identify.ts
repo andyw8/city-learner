@@ -2,6 +2,7 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import { buildChoices, type Choice } from '../deck/choices'
 import type { Deck, Feature } from '../deck/types'
 import { focusFeature, setHighlight } from '../map/highlight'
+import { setLabelsVisible } from '../map/labels'
 import { el } from './dom'
 import type { SessionMode } from './session'
 
@@ -38,6 +39,7 @@ export function startIdentify(
 
     setHighlight(map, feature)
     focusFeature(map, feature)
+    setLabelsVisible(map, false)
 
     const options = el('div', { className: 'options' })
     options.setAttribute('role', 'group')
@@ -73,6 +75,7 @@ export function startIdentify(
         ? `Correct — ${feature.name}.`
         : `Not quite. That is ${feature.name}. ${feature.description}`
       nextButton.hidden = false
+      setLabelsVisible(map, true)
       handlers.onAnswered?.(feature, correct)
     }
 

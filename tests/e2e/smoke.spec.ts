@@ -6,17 +6,42 @@ test('app boots and loads the Toronto deck', async ({ page }) => {
   await expect(page.getByText('Toronto, Ontario, Canada — 13 features')).toBeVisible()
 })
 
-test('renders the unlabelled PMTiles basemap', async ({ page }) => {
+test('renders the basemap with no labels visible', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.map.isStyleLoaded() === true)
 
   await expect(page.locator('canvas.maplibregl-canvas')).toBeVisible()
   await expect(page.locator('.maplibregl-ctrl-attrib')).toContainText('OpenStreetMap')
 
-  const symbols = await page.evaluate(
-    () => window.cityLearner!.map.getStyle().layers.filter((l) => l.type === 'symbol').length,
+  const visibleSymbols = await page.evaluate(
+    () =>
+      window.cityLearner!.map
+        .getStyle()
+        .layers.filter((l) => l.type === 'symbol' && l.layout?.visibility !== 'none').length,
   )
-  expect(symbols).toBe(0)
+  expect(visibleSymbols).toBe(0)
+})
+
+test('labels are revealed after answering and hidden for the next question', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
+  await page.locator(`button[data-feature-id="${featureId}"]`).click()
+
+  await page.waitForFunction(() =>
+    window.cityLearner!.map
+      .getStyle()
+      .layers.some((l) => l.type === 'symbol' && l.layout?.visibility === 'visible'),
+  )
+
+  await page.getByRole('button', { name: 'Next' }).click()
+  await page.waitForFunction(() =>
+    window.cityLearner!.map
+      .getStyle()
+      .layers.filter((l) => l.type === 'symbol')
+      .every((l) => l.layout?.visibility === 'none'),
+  )
 })
 
 test('mode A: a correct answer is confirmed', async ({ page }) => {

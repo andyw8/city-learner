@@ -2,6 +2,7 @@ import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl'
 import { checkLocate } from '../deck/distance'
 import type { Deck, Feature, Position } from '../deck/types'
 import { clearGuess, clearHighlight, setGuess, setHighlight } from '../map/highlight'
+import { setLabelsVisible } from '../map/labels'
 import { fitDeck } from '../map/view'
 import { el } from './dom'
 import type { SessionMode } from './session'
@@ -43,6 +44,7 @@ export function startLocate(
 
     clearHighlight(map)
     clearGuess(map)
+    setLabelsVisible(map, false)
     map.getCanvas().style.cursor = 'crosshair'
 
     const feedback = el('p', { className: 'feedback' })
@@ -78,6 +80,7 @@ export function startLocate(
 
       setGuess(map, point, result.correct)
       setHighlight(map, feature)
+      setLabelsVisible(map, true)
 
       feedback.textContent = result.correct
         ? `Correct — ${formatDistance(result.distanceM)} from ${feature.name}.`

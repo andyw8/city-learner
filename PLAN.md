@@ -183,4 +183,10 @@ tests/
   `map.ts` calls `setWorkerUrl('/maplibre-gl-worker.mjs')`.
 - **Session start.** The session begins on `style.load`, not `load`, so the first
   question appears without waiting for every basemap tile to download.
+- **Label reveal.** The basemap style includes all symbol layers but sets
+  `visibility: none`, so nothing is labelled while answering. On submit,
+  `setLabelsVisible(map, true)` reveals the labels for feedback; the next question
+  hides them again. This needs the Protomaps glyphs and sprite over the network
+  (`protomaps.github.io/basemaps-assets`); when offline the map still works but
+  labels do not render.
 

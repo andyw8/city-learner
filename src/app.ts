@@ -1,6 +1,7 @@
 import { loadDeck } from './deck/load'
 import type { Mode } from './deck/types'
 import { addGuessLayer, addHighlightLayers, clearGuess, clearHighlight } from './map/highlight'
+import { setLabelsVisible } from './map/labels'
 import { createMap } from './map/map'
 import { startIdentify } from './ui/identify'
 import { startLocate } from './ui/locate'
@@ -40,6 +41,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
     session?.stop()
     clearHighlight(map)
     clearGuess(map)
+    setLabelsVisible(map, false)
     for (const button of modeButtons) {
       button.classList.toggle('active', button.dataset.mode === mode)
     }
