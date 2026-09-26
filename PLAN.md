@@ -230,10 +230,11 @@ tests/
 - **Deck sync.** `syncCards` deletes cards whose feature is no longer in the deck
   before adding new ones, so regenerating the deck leaves no orphaned cards.
 - **PMTiles byte serving.** The custom Pages domain is proxied by Cloudflare,
-  which can answer a `Range` request with a full `200` and no `Content-Length`;
-  pmtiles' own `FetchSource` rejects that. `src/map/pmtiles.ts` registers an
-  `HttpRangeSource` on the protocol that slices a full response itself, so the
-  archive loads regardless of how the host handles byte serving.
+  which mishandles `Range` requests — it can return the whole file, or fail under
+  concurrent tile requests — which breaks pmtiles' `FetchSource`.
+  `src/map/pmtiles.ts` registers an `ArchiveSource` that downloads the archive
+  once into memory and slices it, so the basemap loads regardless of how the host
+  handles byte serving.
 - **Deployment.** Pushing to `main` publishes to GitHub Pages via
   `.github/workflows/deploy.yml`: the workflow extracts the pinned PMTiles
   cutout, builds with `BASE_PATH=/city-learner/`, and deploys `dist/`. Asset URLs
