@@ -97,15 +97,17 @@ There is no runtime tile server — map tiles come from the local
 
 ## Deployment
 
-Pushing to `main` deploys the app to GitHub Pages via
-`.github/workflows/deploy.yml`. The workflow extracts the Toronto PMTiles cutout
-(using the pinned Protomaps build, cached between runs), builds with
-`BASE_PATH=/city-learner/`, and publishes `dist/`.
+Live at **https://andywaite.com/city-learner/**.
 
-Asset URLs are derived from `import.meta.env.BASE_URL`, so set `BASE_PATH` when
-building for a different path (defaults to `/`). Pages must be enabled with
-**GitHub Actions** as the source; note that Pages on a private repository
-requires a paid plan.
+Pushing to `main` deploys via `.github/workflows/deploy.yml`: the workflow
+extracts the Toronto PMTiles cutout (pinned Protomaps build, cached between
+runs), builds with `BASE_PATH=/city-learner/`, and publishes `dist/` to GitHub
+Pages. Asset URLs are derived from `import.meta.env.BASE_URL`, so set
+`BASE_PATH` when building for a different path (defaults to `/`).
+
+Pages uses **GitHub Actions** as its source, and the repository is public so
+Pages and Actions are available without a paid plan. Project sites are served
+under the account's custom Pages domain (`andywaite.com`).
 
 ## Attribution and licensing
 

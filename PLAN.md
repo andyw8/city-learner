@@ -232,5 +232,8 @@ tests/
 - **Deployment.** Pushing to `main` publishes to GitHub Pages via
   `.github/workflows/deploy.yml`: the workflow extracts the pinned PMTiles
   cutout, builds with `BASE_PATH=/city-learner/`, and deploys `dist/`. Asset URLs
-  are built from `import.meta.env.BASE_URL` so the app works from a subpath.
+  are built from `import.meta.env.BASE_URL` so the app works from a subpath. The
+  repository is public (a requirement for Pages on the free plan) and the site
+  is live at `https://andywaite.com/city-learner/` on the account's custom Pages
+  domain.
 
