@@ -2,7 +2,15 @@ import { Rating, createEmptyCard, fsrs } from 'ts-fsrs'
 import type { Feature, Mode } from '../deck/types'
 import { cardId, type Card } from './types'
 
-const scheduler = fsrs()
+// Tuned for a lighter, less repetitive load: review at 85% recall, scatter
+// intervals across days, keep a one-year ceiling, and skip the minute-level
+// (re)learning steps that bounce a card straight back into the next session.
+const scheduler = fsrs({
+  request_retention: 0.85,
+  maximum_interval: 365,
+  enable_fuzz: true,
+  enable_short_term: false,
+})
 
 export function newCard(feature: Feature, mode: Mode, now: Date, city: string): Card {
   return {

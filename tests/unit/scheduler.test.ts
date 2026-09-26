@@ -32,7 +32,7 @@ describe('review', () => {
     const next = review(card, true, now)
 
     expect(next.reps).toBe(1)
-    expect(next.state).toBe(State.Learning)
+    expect(next.state).toBe(State.Review)
     expect(next.id).toBe(card.id)
     expect(next.city).toBe('toronto')
     expect(next.featureId).toBe('osm:node/x')
