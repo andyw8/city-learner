@@ -37,7 +37,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
   const actionButtons = root.querySelectorAll<HTMLButtonElement>('.modes button')
   if (!mapContainer || !panel || !deckLabel) throw new Error('Missing layout elements')
 
-  const deck = await loadDeck('/decks/toronto.json')
+  const deck = await loadDeck(`${import.meta.env.BASE_URL}decks/toronto.json`)
   deckLabel.textContent = `${deck.city} — ${deck.features.length} features`
 
   let settings = await loadSettings()

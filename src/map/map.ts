@@ -10,7 +10,7 @@ let configured = false
 function configureMaplibre(): void {
   if (configured) return
   addProtocol('pmtiles', new Protocol().tile)
-  setWorkerUrl('/maplibre-gl-worker.mjs')
+  setWorkerUrl(`${import.meta.env.BASE_URL}maplibre-gl-worker.mjs`)
   configured = true
 }
 

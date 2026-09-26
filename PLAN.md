@@ -173,7 +173,6 @@ tests/
 8. **Polish** — progress dashboard, per-category tolerances, settings, session summary. ✅
 
 ## Non-goals (v1)
-
 - No photos or media for landmarks.
 - No user accounts or cross-device sync.
 - No multi-city UI (city stays a data parameter).
@@ -230,4 +229,8 @@ tests/
   summary (`.stats`) when a session finishes, alongside the finish message.
 - **Deck sync.** `syncCards` deletes cards whose feature is no longer in the deck
   before adding new ones, so regenerating the deck leaves no orphaned cards.
+- **Deployment.** Pushing to `main` publishes to GitHub Pages via
+  `.github/workflows/deploy.yml`: the workflow extracts the pinned PMTiles
+  cutout, builds with `BASE_PATH=/city-learner/`, and deploys `dist/`. Asset URLs
+  are built from `import.meta.env.BASE_URL` so the app works from a subpath.
 

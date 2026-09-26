@@ -3,7 +3,7 @@ import type { LayerSpecification, StyleSpecification } from 'maplibre-gl'
 
 export const BASEMAP_SOURCE = 'protomaps'
 
-export const BASEMAP_URL = '/tiles/toronto.pmtiles'
+export const BASEMAP_URL = `${import.meta.env.BASE_URL}tiles/toronto.pmtiles`
 
 export const BASEMAP_ATTRIBUTION =
   '<a href="https://protomaps.com">Protomaps</a> · <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>'

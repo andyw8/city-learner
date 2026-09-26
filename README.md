@@ -95,6 +95,18 @@ The app has no backend; these are the only external services it uses.
 There is no runtime tile server — map tiles come from the local
 `data/tiles/toronto.pmtiles` file. No user data leaves the browser.
 
+## Deployment
+
+Pushing to `main` deploys the app to GitHub Pages via
+`.github/workflows/deploy.yml`. The workflow extracts the Toronto PMTiles cutout
+(using the pinned Protomaps build, cached between runs), builds with
+`BASE_PATH=/city-learner/`, and publishes `dist/`.
+
+Asset URLs are derived from `import.meta.env.BASE_URL`, so set `BASE_PATH` when
+building for a different path (defaults to `/`). Pages must be enabled with
+**GitHub Actions** as the source; note that Pages on a private repository
+requires a paid plan.
+
 ## Attribution and licensing
 
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors,
