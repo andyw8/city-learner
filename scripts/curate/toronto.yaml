@@ -126,6 +126,7 @@ manual:
   - name: Lake Ontario
     id: osm:relation/lake-ontario
     category: water
+    noun: lake
     description: The Great Lake forming Toronto's southern waterfront; the city's harbour is sheltered behind the Toronto Islands.
     geometry:
       type: Polygon
@@ -164,6 +165,7 @@ manual:
   - name: Union Station
     id: osm:way/14744491
     category: landmark
+    noun: train station
     aliases: [Toronto Union Station]
     toleranceM: 120
     description: The city's grand Beaux-Arts railway station and the centre of the GO, VIA and subway networks.

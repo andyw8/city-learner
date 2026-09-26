@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import { buildChoices, type Choice } from '../deck/choices'
+import { featureNoun } from '../deck/noun'
 import type { Deck, Feature } from '../deck/types'
 import { focusFeature, setHighlight } from '../map/highlight'
 import { setLabelsVisible } from '../map/labels'
@@ -70,7 +71,7 @@ export function presentIdentify(
   nextButton.addEventListener('click', () => resolvePromise(result))
 
   panel.replaceChildren(
-    el('h2', { textContent: 'What is the highlighted feature?' }),
+    el('h2', { textContent: `What is the highlighted ${featureNoun(feature)}?` }),
     options,
     feedback,
     nextButton,

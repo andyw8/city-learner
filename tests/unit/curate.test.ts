@@ -122,10 +122,17 @@ describe('applyManual', () => {
       {
         name: 'Lake Ontario',
         category: 'water',
+        noun: 'lake',
         geometry: { type: 'Point', coordinates: [-79.38, 43.6] },
       },
     ])
     expect(features.map((feature) => feature.name)).toContain('Lake Ontario')
+    expect(features.find((feature) => feature.name === 'Lake Ontario')?.noun).toBe('lake')
+  })
+
+  it('patches a generated feature noun by name', () => {
+    const { features } = applyManual([base], [{ name: 'Bloor Street', category: 'road', noun: 'thoroughfare' }])
+    expect(features[0]?.noun).toBe('thoroughfare')
   })
 
   it('reports manual entries that match nothing', () => {

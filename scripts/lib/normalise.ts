@@ -70,27 +70,28 @@ const LANDMARK_KINDS: Record<string, string> = {
   tower: 'tower',
 }
 
-export function describe(category: Category, tags: Record<string, string>): string {
+export function featureKind(category: Category, tags: Record<string, string>): string {
   switch (category) {
-    case 'road': {
-      const kind = ROAD_KINDS[tags.highway ?? ''] ?? 'road'
-      return `A ${kind} in Toronto.`
-    }
+    case 'road':
+      return ROAD_KINDS[tags.highway ?? ''] ?? 'road'
     case 'neighbourhood':
-      return 'A neighbourhood in Toronto.'
-    case 'water': {
-      const kind = WATER_KINDS[tags.waterway ?? ''] ?? WATER_KINDS[tags.natural ?? ''] ?? 'body of water'
-      return `A ${kind} in Toronto.`
-    }
-    case 'landmark': {
-      const kind =
+      return 'neighbourhood'
+    case 'water':
+      return (
+        WATER_KINDS[tags.waterway ?? ''] ?? WATER_KINDS[tags.natural ?? ''] ?? 'body of water'
+      )
+    case 'landmark':
+      return (
         LANDMARK_KINDS[tags.tourism ?? ''] ??
         LANDMARK_KINDS[tags.historic ?? ''] ??
         LANDMARK_KINDS[tags.man_made ?? ''] ??
         'landmark'
-      return `A ${kind} in Toronto.`
-    }
+      )
   }
+}
+
+export function describe(category: Category, tags: Record<string, string>): string {
+  return `A ${featureKind(category, tags)} in Toronto.`
 }
 
 function geometryFromCoords(coords: Position[], category: Category): Geometry | null {
@@ -172,6 +173,7 @@ export function candidateFromElement(
     aliases: [],
     category,
     description: describe(category, element.tags ?? {}),
+    noun: featureKind(category, element.tags ?? {}),
     geometry,
     osmId: `${element.type}/${element.id}`,
   }

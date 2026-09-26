@@ -24,6 +24,7 @@ export const featureSchema = z.object({
   aliases: z.array(z.string().min(1)).default([]),
   category: categorySchema,
   description: z.string(),
+  noun: z.string().min(1).optional(),
   geometry: geometrySchema,
   osmId: z.string().min(1).optional(),
   toleranceM: z.number().positive().optional(),

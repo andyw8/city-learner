@@ -39,12 +39,13 @@ export const manualEntrySchema = z
     name: z.string().min(1),
     category: categorySchema,
     description: z.string().optional(),
+    noun: z.string().min(1).optional(),
     aliases: z.array(z.string().min(1)).optional(),
     toleranceM: z.number().positive().optional(),
     geometry: geometrySchema.optional(),
   })
   .refine(
-    (entry) => entry.geometry !== undefined || entry.description !== undefined || entry.aliases !== undefined || entry.toleranceM !== undefined,
+    (entry) => entry.geometry !== undefined || entry.description !== undefined || entry.noun !== undefined || entry.aliases !== undefined || entry.toleranceM !== undefined,
     { message: 'A manual entry needs geometry or metadata to apply' },
   )
 
@@ -185,6 +186,7 @@ export function applyManual(features: Feature[], manual: ManualEntry[]): ManualR
         aliases: entry.aliases ?? [],
         category: entry.category,
         description: entry.description ?? describe(entry.category, {}),
+        ...(entry.noun !== undefined ? { noun: entry.noun } : {}),
         geometry: entry.geometry,
         ...(entry.toleranceM !== undefined ? { toleranceM: entry.toleranceM } : {}),
       })
@@ -199,6 +201,7 @@ export function applyManual(features: Feature[], manual: ManualEntry[]): ManualR
       continue
     }
     if (entry.description !== undefined) target.description = entry.description
+    if (entry.noun !== undefined) target.noun = entry.noun
     if (entry.aliases !== undefined) target.aliases = entry.aliases
     if (entry.toleranceM !== undefined) target.toleranceM = entry.toleranceM
   }

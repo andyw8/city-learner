@@ -38,6 +38,30 @@ describe('candidateFromElement', () => {
     expect(candidate?.feature.geometry.type).toBe('LineString')
   })
 
+  it('records a category-specific noun', () => {
+    const road: OsmElement = {
+      type: 'way',
+      id: 6,
+      geometry: [
+        { lat: 43.64, lon: -79.38 },
+        { lat: 43.65, lon: -79.38 },
+      ],
+      tags: { name: 'Bathurst Street', highway: 'secondary' },
+    }
+    expect(candidateFromElement(road, 'road', options)?.feature.noun).toBe('secondary road')
+
+    const river: OsmElement = {
+      type: 'way',
+      id: 7,
+      geometry: [
+        { lat: 43.64, lon: -79.38 },
+        { lat: 43.65, lon: -79.38 },
+      ],
+      tags: { name: 'Don River', waterway: 'river' },
+    }
+    expect(candidateFromElement(river, 'water', options)?.feature.noun).toBe('river')
+  })
+
   it('skips elements without a name', () => {
     const element: OsmElement = { type: 'node', id: 4, lat: 43.64, lon: -79.38 }
     expect(candidateFromElement(element, 'landmark', options)).toBeNull()
