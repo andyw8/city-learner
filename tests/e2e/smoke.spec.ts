@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('app boots and loads the Toronto deck', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'City Learner' })).toBeVisible()
-  await expect(page.getByText('Toronto, Ontario, Canada — 13 features')).toBeVisible()
+  await expect(page.getByText(/Toronto, Ontario, Canada — \d+ features/)).toBeVisible()
 })
 
 test('renders the basemap with no labels visible', async ({ page }) => {

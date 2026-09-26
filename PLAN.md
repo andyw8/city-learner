@@ -106,27 +106,42 @@ The deck itself is a static JSON file loaded read-only; only card state is persi
 
 ## Deck generation
 
-Build-time script (`scripts/build-deck.ts`, run via `tsx`) plus a curation file.
+`npm run build:deck` runs `scripts/build-deck.ts` (via `tsx`) and writes
+`data/decks/toronto.json` from OpenStreetMap, guided by
+`scripts/curate/toronto.yaml`.
 
-1. Query Overpass for the Toronto relation/bbox:
-   - roads: `highway=motorway|trunk|primary` with a `name`.
-   - neighbourhoods: `place=suburb|neighbourhood`, admin boundaries.
-   - water: `natural=water`, `waterway=river` with a `name`.
-   - landmarks: `tourism=attraction`, `historic=*`, curated buildings.
-2. Merge with `scripts/curate/toronto.yaml`:
-   - `include` (names worth learning), `exclude`, and manual entries with
-     descriptions/aliases/tolerance.
-3. Normalise: pick representative geometry (largest ring/multipolygon), compute
-   centroid and bbox, simplify with `@turf/simplify`, cap coordinate precision.
-4. Emit `data/decks/toronto.json` with `{ city, version, features }`. Committed.
+1. Queries the Overpass API (`overpass-api.de`, falling back to
+   `overpass.kumi.systems`) once per category, scoped to the City of Toronto
+   administrative area (relation 324211 → area 3600324211) so neighbouring
+   municipalities are excluded:
+   - roads: named `motorway|trunk|primary|secondary` ways
+   - neighbourhoods: `place=suburb|neighbourhood|quarter`
+   - water: named `waterway=river|canal|stream` and `natural=water|bay`
+   - landmarks: `tourism=*`, `leisure=stadium`, `man_made=tower`,
+     `amenity=marketplace`, `historic=castle|monument|memorial`
+2. Normalises geometry: node → Point, open way → LineString, closed way →
+   Polygon, relation → stitched outer ring. Geometry is clipped to the bbox,
+   simplified with Douglas–Peucker (25 m), and rounded to 6 decimal places.
+3. Merges features that share a name. Roads fold directional suffixes
+   ("Bloor Street West" → "Bloor Street") and stitch into the longest
+   continuous line; a per-category cap keeps the deck manageable.
+4. Applies curation: `include` (force names in), `exclude` (drop), and `manual`
+   entries that either patch a generated feature (description/aliases/tolerance)
+   or add a standalone one (e.g. Lake Ontario, Union Station).
+5. Emits a deck validated by the app's Zod schema. The output is committed so
+   the app and tests run offline.
 
-Open item: large-area features (rivers, big neighbourhoods) should be clipped to
-the city bbox to keep geometry manageable.
+Overpass responses are cached in `scripts/.cache/` (gitignored, keyed by a hash
+of the query), so reruns are offline and fast; pass `--refresh` to refetch.
+Regenerate only when the deck should be updated — OSM changes over time.
 
 ## Repository layout
 
 ```
 scripts/
+  build-deck.ts             # Overpass -> data/decks/toronto.json
+  lib/{overpass,normalise,geometry,curate}.ts
+  curate/toronto.yaml       # include/exclude/manual curation
   fetch-tiles.sh            # download a Toronto PMTiles cutout
   copy-maplibre-worker.mjs  # copy MapLibre worker assets into data/
 data/
@@ -153,7 +168,7 @@ tests/
 4. **Mode A** — multiple choice flow and scoring.
 5. **Mode B** — click-to-locate and geometry distance scoring.
 6. **SRS** — FSRS scheduling, session queue, persistence across reloads. ✅
-7. **Real deck** — Overpass + curation script producing the Toronto deck.
+7. **Real deck** — Overpass + curation script producing the Toronto deck. ✅
 8. **Polish** — progress dashboard, per-category tolerances, settings, offline PMTiles.
 
 ## Non-goals (v1)
@@ -195,4 +210,10 @@ tests/
   `Review` builds the queue from due and new cards (`buildQueue`) and writes FSRS
   state via Dexie; `Identify` / `Locate` are unscheduled practice over the whole
   deck. Cards are keyed `${featureId}:${mode}` and created on demand by `syncCards`.
+- **Deck generation.** `npm run build:deck` queries Overpass (scoped to the
+  Toronto area), normalises and merges features, applies
+  `scripts/curate/toronto.yaml`, and writes the 252-feature Toronto deck. The
+  build script imports `parseDeck` from `src/` so generated output is validated
+  by the same Zod schema the app loads. Results are cached by query hash; use
+  `--refresh` to refetch from Overpass.
 

@@ -13,6 +13,9 @@ dist
 /data/maplibre-gl-worker.mjs
 /data/maplibre-gl-shared.mjs
 
+# Cached Overpass responses (scripts/build-deck.ts)
+/scripts/.cache/
+
 # Playwright
 /test-results/
 /playwright-report/

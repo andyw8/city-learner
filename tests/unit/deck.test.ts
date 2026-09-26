@@ -11,10 +11,13 @@ const minimalFeature = {
 }
 
 describe('parseDeck', () => {
-  it('parses the Toronto deck', () => {
+  it('parses the generated Toronto deck', () => {
     const deck = parseDeck(toronto)
     expect(deck.city).toBe('Toronto, Ontario, Canada')
-    expect(deck.features).toHaveLength(13)
+    expect(deck.features.length).toBeGreaterThan(200)
+    expect(new Set(deck.features.map((feature) => feature.category))).toEqual(
+      new Set(['road', 'neighbourhood', 'water', 'landmark']),
+    )
   })
 
   it('defaults aliases to an empty array', () => {
