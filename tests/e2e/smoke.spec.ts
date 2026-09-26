@@ -105,3 +105,36 @@ test('mode B: clicking far away is incorrect and reveals the target', async ({ p
   await page.mouse.click(box!.x + 20, box!.y + 20)
   await expect(page.locator('.feedback')).toContainText('Not quite')
 })
+
+function reviewedCount(page: import('@playwright/test').Page): Promise<number> {
+  return page.evaluate(
+    () =>
+      new Promise<number>((resolve, reject) => {
+        const request = indexedDB.open('city-learner')
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => {
+          const db = request.result
+          const getAll = db.transaction('cards', 'readonly').objectStore('cards').getAll()
+          getAll.onsuccess = () =>
+            resolve(
+              (getAll.result as { reps: number }[]).filter((card) => card.reps > 0).length,
+            )
+          getAll.onerror = () => reject(getAll.error)
+        }
+      }),
+  )
+}
+
+test('reviews are persisted to IndexedDB across reloads', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
+  await page.locator(`button[data-feature-id="${featureId}"]`).click()
+  await page.getByRole('button', { name: 'Next' }).click()
+  await expect.poll(() => reviewedCount(page)).toBeGreaterThan(0)
+
+  await page.reload()
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  expect(await reviewedCount(page)).toBeGreaterThan(0)
+})

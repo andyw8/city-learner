@@ -127,17 +127,18 @@ the city bbox to keep geometry manageable.
 
 ```
 scripts/
-  build-deck.ts
-  curate/toronto.yaml
-data/decks/toronto.json
+  fetch-tiles.sh            # download a Toronto PMTiles cutout
+  copy-maplibre-worker.mjs  # copy MapLibre worker assets into data/
+data/
+  decks/toronto.json
+  tiles/toronto.pmtiles     # gitignored; see fetch-tiles.sh
 src/
-  main.ts
-  deck/{types.ts,load.ts}
-  db/{schema.ts,cards.ts}
-  srs/{scheduler.ts,queue.ts}
-  modes/{identify.ts,locate.ts}
-  map/{map.ts,style.ts,highlight.ts,geometry.ts}
-  ui/{session.ts,summary.ts}
+  main.ts app.ts window.d.ts style.css
+  deck/{types.ts,load.ts,geometry.ts,choices.ts,distance.ts}
+  db/schema.ts
+  srs/{types.ts,scheduler.ts,queue.ts,store.ts}
+  map/{map.ts,style.ts,highlight.ts,labels.ts,view.ts}
+  ui/{dom.ts,session.ts,identify.ts,locate.ts}
 tests/
   unit/...
   e2e/...
@@ -151,7 +152,7 @@ tests/
 3. **Map** — label-free PMTiles basemap + highlight layer.
 4. **Mode A** — multiple choice flow and scoring.
 5. **Mode B** — click-to-locate and geometry distance scoring.
-6. **SRS** — FSRS scheduling, session queue, persistence across reloads.
+6. **SRS** — FSRS scheduling, session queue, persistence across reloads. ✅
 7. **Real deck** — Overpass + curation script producing the Toronto deck.
 8. **Polish** — progress dashboard, per-category tolerances, settings, offline PMTiles.
 
@@ -189,4 +190,9 @@ tests/
   hides them again. This needs the Protomaps glyphs and sprite over the network
   (`protomaps.github.io/basemaps-assets`); when offline the map still works but
   labels do not render.
+- **Sessions.** `runSession` drives a queue of `ReviewItem`s and delegates each to
+  `presentIdentify` / `presentLocate`, which return a promise resolved on "Next".
+  `Review` builds the queue from due and new cards (`buildQueue`) and writes FSRS
+  state via Dexie; `Identify` / `Locate` are unscheduled practice over the whole
+  deck. Cards are keyed `${featureId}:${mode}` and created on demand by `syncCards`.
 
