@@ -56,6 +56,24 @@ describe('distanceToGeometry', () => {
     expect(distanceToGeometry(far, geometry)).toBeGreaterThan(4000)
   })
 
+  it('measures distance to the nearest line of a MultiLineString', () => {
+    const geometry: Geometry = {
+      type: 'MultiLineString',
+      coordinates: [
+        [
+          [-79.4, 43.6],
+          [-79.38, 43.6],
+        ],
+        [
+          [-79.4, 43.65],
+          [-79.38, 43.65],
+        ],
+      ],
+    }
+    const near: Position = [-79.39, 43.6505]
+    expect(distanceToGeometry(near, geometry)).toBeLessThan(100)
+  })
+
   it('returns zero inside a polygon and a positive distance outside', () => {
     const geometry: Geometry = {
       type: 'Polygon',

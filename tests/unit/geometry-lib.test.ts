@@ -72,6 +72,39 @@ describe('stitchLines', () => {
     expect(joined).toHaveLength(1)
     expect(joined[0]).toHaveLength(3)
   })
+
+  it('extends the line at both ends regardless of seed order', () => {
+    const joined = stitchLines([
+      [
+        [1, 0],
+        [1, 1],
+      ],
+      [
+        [0, 0],
+        [1, 0],
+      ],
+    ])
+    expect(joined).toHaveLength(1)
+    expect(joined[0]).toEqual([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+    ])
+  })
+
+  it('keeps disconnected segments as separate lines', () => {
+    const joined = stitchLines([
+      [
+        [0, 0],
+        [0, 1],
+      ],
+      [
+        [5, 5],
+        [5, 6],
+      ],
+    ])
+    expect(joined).toHaveLength(2)
+  })
 })
 
 describe('clipGeometryToBbox', () => {

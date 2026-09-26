@@ -46,6 +46,8 @@ export function geometrySizeM(geometry: Geometry): number {
       return 0
     case 'LineString':
       return lineLengthM(geometry.coordinates)
+    case 'MultiLineString':
+      return geometry.coordinates.reduce((total, line) => total + lineLengthM(line), 0)
     case 'Polygon':
       return Math.sqrt(ringAreaM2(geometry.coordinates[0] ?? []))
   }
@@ -109,17 +111,25 @@ export function simplifyLine(coords: Position[], toleranceM: number): Position[]
   return coords.filter((_, index) => keep[index])
 }
 
+function simplifyCoords(coords: Position[], toleranceM: number): Position[] {
+  const simplified = simplifyLine(coords, toleranceM)
+  return simplified.length >= 2 ? simplified : coords
+}
+
 export function simplifyGeometry(geometry: Geometry, toleranceM: number): Geometry {
   switch (geometry.type) {
     case 'Point':
       return geometry
-    case 'LineString': {
-      const simplified = simplifyLine(geometry.coordinates, toleranceM)
+    case 'LineString':
       return {
         type: 'LineString',
-        coordinates: simplified.length >= 2 ? simplified : geometry.coordinates,
+        coordinates: simplifyCoords(geometry.coordinates, toleranceM),
       }
-    }
+    case 'MultiLineString':
+      return {
+        type: 'MultiLineString',
+        coordinates: geometry.coordinates.map((line) => simplifyCoords(line, toleranceM)),
+      }
     case 'Polygon':
       return {
         type: 'Polygon',
@@ -223,14 +233,21 @@ export function stitchLines(segments: Position[][]): Position[][] {
     let extended = true
     while (extended) {
       extended = false
+      const start = keyOf(line[0]!)
       const end = keyOf(line[line.length - 1]!)
       for (let j = 0; j < segments.length; j++) {
         if (used[j]) continue
         const segment = segments[j]!
-        if (keyOf(segment[0]!) === end) {
+        const segmentStart = keyOf(segment[0]!)
+        const segmentEnd = keyOf(segment[segment.length - 1]!)
+        if (segmentStart === end) {
           line.push(...segment.slice(1))
-        } else if (keyOf(segment[segment.length - 1]!) === end) {
+        } else if (segmentEnd === end) {
           line.push(...segment.slice(0, -1).reverse())
+        } else if (segmentEnd === start) {
+          line.unshift(...segment.slice(0, -1))
+        } else if (segmentStart === start) {
+          line.unshift(...segment.slice(1).reverse())
         } else {
           continue
         }
@@ -249,6 +266,15 @@ export function stitchRings(segments: Position[][]): Position[][] {
   return stitchLines(segments)
 }
 
+function clipLine(coords: Position[], bbox: BBox): Position[][] {
+  const pieces: Position[][] = []
+  for (let i = 1; i < coords.length; i++) {
+    const clipped = clipSegment(coords[i - 1]!, coords[i]!, bbox)
+    if (clipped) pieces.push([clipped[0], clipped[1]])
+  }
+  return stitchLines(pieces).filter((line) => line.length >= 2)
+}
+
 export function clipGeometryToBbox(geometry: Geometry, bbox: BBox): Geometry | null {
   const [minLng, minLat, maxLng, maxLat] = bbox
   switch (geometry.type) {
@@ -258,15 +284,14 @@ export function clipGeometryToBbox(geometry: Geometry, bbox: BBox): Geometry | n
       return geometry
     }
     case 'LineString': {
-      const pieces: Position[][] = []
-      for (let i = 1; i < geometry.coordinates.length; i++) {
-        const clipped = clipSegment(geometry.coordinates[i - 1]!, geometry.coordinates[i]!, bbox)
-        if (clipped) pieces.push([clipped[0], clipped[1]])
-      }
-      const stitched = stitchLines(pieces)
-      if (stitched.length === 0) return null
-      const longest = stitched.reduce((a, b) => (lineLengthM(a) >= lineLengthM(b) ? a : b))
-      return longest.length >= 2 ? { type: 'LineString', coordinates: longest } : null
+      const lines = clipLine(geometry.coordinates, bbox)
+      if (lines.length === 0) return null
+      const longest = lines.reduce((a, b) => (lineLengthM(a) >= lineLengthM(b) ? a : b))
+      return { type: 'LineString', coordinates: longest }
+    }
+    case 'MultiLineString': {
+      const lines = geometry.coordinates.flatMap((line) => clipLine(line, bbox))
+      return lines.length > 0 ? { type: 'MultiLineString', coordinates: lines } : null
     }
     case 'Polygon': {
       const edges = clipEdges(bbox)
@@ -288,6 +313,11 @@ export function roundGeometry(geometry: Geometry, precision: number): Geometry {
       return { type: 'Point', coordinates: round(geometry.coordinates) }
     case 'LineString':
       return { type: 'LineString', coordinates: dedupeConsecutive(geometry.coordinates.map(round)) }
+    case 'MultiLineString':
+      return {
+        type: 'MultiLineString',
+        coordinates: geometry.coordinates.map((line) => dedupeConsecutive(line.map(round))),
+      }
     case 'Polygon':
       return {
         type: 'Polygon',

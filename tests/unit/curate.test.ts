@@ -43,7 +43,24 @@ describe('selectFeatures', () => {
     expect(features).toHaveLength(1)
     expect(features[0]?.name).toBe('Bloor Street')
     expect(features[0]?.aliases).toEqual(['Bloor Street East', 'Bloor Street West'])
-    expect(features[0]?.geometry.type).toBe('LineString')
+    expect(features[0]?.geometry.type).toBe('MultiLineString')
+  })
+
+  it('keeps disconnected runs of the same street', () => {
+    const { features } = selectFeatures(
+      [
+        candidate('Bathurst Street', [[-79.43, 43.67], [-79.43, 43.68]]),
+        candidate('Bathurst Street', [[-79.43, 43.7], [-79.43, 43.71]]),
+      ],
+      rule,
+      {},
+      'road',
+    )
+    const geometry = features[0]?.geometry
+    expect(geometry?.type).toBe('MultiLineString')
+    if (geometry?.type === 'MultiLineString') {
+      expect(geometry.coordinates).toHaveLength(2)
+    }
   })
 
   it('forces included names past the size filter', () => {

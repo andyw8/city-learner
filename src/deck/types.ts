@@ -9,6 +9,10 @@ const position = z.tuple([z.number().min(-180).max(180), z.number().min(-90).max
 export const geometrySchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('Point'), coordinates: position }),
   z.object({ type: z.literal('LineString'), coordinates: z.array(position).min(2) }),
+  z.object({
+    type: z.literal('MultiLineString'),
+    coordinates: z.array(z.array(position).min(2)).min(1),
+  }),
   z.object({ type: z.literal('Polygon'), coordinates: z.array(z.array(position).min(4)).min(1) }),
 ])
 

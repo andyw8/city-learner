@@ -20,6 +20,23 @@ describe('bboxOf', () => {
     expect(bboxOf(geometry)).toEqual([-79.5, 43.6, -79.3, 43.75])
   })
 
+  it('covers every line of a MultiLineString', () => {
+    const geometry: Geometry = {
+      type: 'MultiLineString',
+      coordinates: [
+        [
+          [-79.5, 43.6],
+          [-79.4, 43.65],
+        ],
+        [
+          [-79.3, 43.75],
+          [-79.35, 43.7],
+        ],
+      ],
+    }
+    expect(bboxOf(geometry)).toEqual([-79.5, 43.6, -79.3, 43.75])
+  })
+
   it('covers all rings of a Polygon', () => {
     const geometry: Geometry = {
       type: 'Polygon',

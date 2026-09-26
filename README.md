@@ -73,7 +73,8 @@ question.
 2. normalises geometry (clip to bounds, Douglas–Peucker simplification, 6 dp
    precision) and assembles relations into polygons;
 3. merges features sharing a name (roads fold directional suffixes and stitch
-   into the longest continuous line);
+   connected ways into runs, stored as a `MultiLineString` so a whole street is
+   one feature rather than many fragments);
 4. applies curation — `include`/`exclude` lists and `manual` entries that patch
    generated features or add standalone ones (e.g. Lake Ontario);
 5. writes a deck validated with the app's own Zod schema.

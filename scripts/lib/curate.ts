@@ -82,26 +82,25 @@ function mergeGroup(group: Candidate[], rule: CategoryRule): Candidate {
         candidate.lineCoords ? [candidate.lineCoords] : [],
       )
       if (segments.length === 0) return pickLargest(group)
-      const stitched = stitchLines(segments)
-      const best = stitched.reduce((a, b) => (lineLengthM(a) >= lineLengthM(b) ? a : b))
+      const runs = stitchLines(segments).filter((run) => run.length >= 2)
       const base = pickBase(group)
       const names = [...new Set(group.map((candidate) => candidate.feature.name))]
       const name = rule.stripDirectional
         ? stripDirectionalSuffix(base.feature.name)
         : base.feature.name
       const aliases = names.filter((variant) => variant !== name).sort()
-      const coordinates: Position[] = best
+      const coordinates: Position[][] = runs
       return {
         ...base,
         feature: {
           ...base.feature,
           name,
           aliases,
-          geometry: { type: 'LineString', coordinates },
+          geometry: { type: 'MultiLineString', coordinates },
         },
-        lineCoords: coordinates,
+        lineCoords: undefined,
         isPolygon: false,
-        sizeM: lineLengthM(coordinates),
+        sizeM: runs.reduce((total, run) => total + lineLengthM(run), 0),
       }
     }
   }

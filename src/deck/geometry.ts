@@ -6,6 +6,8 @@ function positions(geometry: Geometry): Position[] {
       return [geometry.coordinates]
     case 'LineString':
       return geometry.coordinates
+    case 'MultiLineString':
+      return geometry.coordinates.flat()
     case 'Polygon':
       return geometry.coordinates.flat()
   }

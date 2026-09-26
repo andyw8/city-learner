@@ -81,6 +81,8 @@ export function distanceToGeometry(point: Position, geometry: Geometry): number 
       return haversine(point, geometry.coordinates)
     case 'LineString':
       return distanceToLine(point, geometry.coordinates)
+    case 'MultiLineString':
+      return Math.min(...geometry.coordinates.map((line) => distanceToLine(point, line)))
     case 'Polygon':
       if (pointInPolygon(point, geometry.coordinates)) return 0
       return Math.min(...geometry.coordinates.map((ring) => distanceToLine(point, ring)))
