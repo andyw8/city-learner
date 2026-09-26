@@ -103,6 +103,41 @@ header p {
   background: #fdecec;
 }
 
+.answer-mode {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.answer-mode button {
+  flex: 1;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.answer-mode button.active {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+
+.free-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.free-text input {
+  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
 .feedback {
   min-height: 1.2rem;
   margin: 1rem 0;
@@ -259,6 +294,8 @@ header p {
   }
 
   .options button,
+  .answer-mode button,
+  .free-text input,
   .next,
   .settings button {
     min-height: 44px;

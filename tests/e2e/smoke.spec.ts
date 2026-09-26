@@ -1,4 +1,15 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+async function chooseMultipleChoice(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Multiple choice' }).click()
+}
+
+async function currentFeatureName(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const { deck, current } = window.cityLearner!
+    return deck!.features.find((feature) => feature.id === current!.featureId)!.name
+  })
+}
 
 test('app boots and loads the Toronto deck', async ({ page }) => {
   await page.goto('/')
@@ -25,6 +36,7 @@ test('renders the basemap with no labels visible', async ({ page }) => {
 test('labels are revealed after answering and hidden for the next question', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
 
   const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
   await page.locator(`button[data-feature-id="${featureId}"]`).click()
@@ -47,6 +59,7 @@ test('labels are revealed after answering and hidden for the next question', asy
 test('mode A: a correct answer is confirmed', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
 
   const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
   await expect(page.locator('.options button')).toHaveCount(4)
@@ -59,6 +72,7 @@ test('mode A: a correct answer is confirmed', async ({ page }) => {
 test('mode A: a wrong answer reveals the correct name', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
 
   const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
   const wrongId = await page.evaluate((correct) => {
@@ -69,6 +83,54 @@ test('mode A: a wrong answer reveals the correct name', async ({ page }) => {
   await page.locator(`button[data-feature-id="${wrongId}"]`).click()
   await expect(page.locator('.feedback')).toContainText('Not quite')
   await expect(page.locator(`button[data-feature-id="${featureId}"]`)).toHaveClass(/correct/)
+})
+
+test('mode A: free text is the default and accepts a correct name', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  await expect(page.getByRole('button', { name: 'Free text' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+
+  const name = await currentFeatureName(page)
+  await page.getByRole('textbox').fill(name)
+  await page.getByRole('button', { name: 'Check' }).click()
+  await expect(page.locator('.feedback')).toContainText('Correct')
+})
+
+test('mode A: free text tolerates a small typo', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current?.mode === 'identify')
+
+  const name = await currentFeatureName(page)
+  await page.getByRole('textbox').fill(name.slice(1))
+  await page.getByRole('button', { name: 'Check' }).click()
+  await expect(page.locator('.feedback')).toContainText('Correct')
+})
+
+test('mode A: a wrong free-text answer reveals the name', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  const name = await currentFeatureName(page)
+  await page.getByRole('textbox').fill('zzzzzz')
+  await page.getByRole('button', { name: 'Check' }).click()
+  await expect(page.locator('.feedback')).toContainText('Not quite')
+  await expect(page.locator('.feedback')).toContainText(name)
+})
+
+test('mode A: switching to multiple choice shows options', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
+
+  await expect(page.locator('.options button')).toHaveCount(4)
+  await expect(page.getByRole('button', { name: 'Multiple choice' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 })
 
 async function startLocate(page: import('@playwright/test').Page): Promise<[number, number]> {
@@ -128,6 +190,7 @@ function reviewedCount(page: import('@playwright/test').Page): Promise<number> {
 test('reviews are persisted to IndexedDB across reloads', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
 
   const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
   await page.locator(`button[data-feature-id="${featureId}"]`).click()
@@ -176,6 +239,7 @@ test('a finished review shows a session summary', async ({ page }) => {
   await page.locator('#new-limit').fill('1')
   await page.getByRole('button', { name: 'Save' }).click()
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await chooseMultipleChoice(page)
 
   const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
   await page.locator(`button[data-feature-id="${featureId}"]`).click()

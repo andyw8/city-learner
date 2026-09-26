@@ -61,6 +61,11 @@ export async function startApp(root: HTMLElement): Promise<void> {
       onAnswer: options.onAnswer,
       finishMessage: options.finishMessage,
       tolerances: settings.tolerances,
+      getIdentifyMode: () => settings.identifyMode,
+      onIdentifyModeChange: (mode) => {
+        settings = { ...settings, identifyMode: mode }
+        void saveSettings(settings)
+      },
     })
   }
 
