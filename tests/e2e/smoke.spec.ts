@@ -15,6 +15,10 @@ test('app boots and loads the Toronto deck', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'City Learner' })).toBeVisible()
   await expect(page.getByText(/Toronto, Ontario, Canada — \d+ features/)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Identify' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 })
 
 test('switching city loads that city deck', async ({ page }) => {
@@ -198,6 +202,7 @@ function reviewedCount(page: import('@playwright/test').Page): Promise<number> {
 
 test('reviews are persisted to IndexedDB across reloads', async ({ page }) => {
   await page.goto('/')
+  await page.getByRole('button', { name: 'Review' }).click()
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
   await chooseMultipleChoice(page)
 

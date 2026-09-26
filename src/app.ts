@@ -158,6 +158,6 @@ export async function startApp(root: HTMLElement): Promise<void> {
     for (const button of actionButtons) {
       button.addEventListener('click', () => runAction(button.dataset.action as Action))
     }
-    runAction('review')
+    runAction('identify')
   })
 }
