@@ -229,6 +229,10 @@ tests/
   summary (`.stats`) when a session finishes, alongside the finish message.
 - **Deck sync.** `syncCards` deletes cards whose feature is no longer in the deck
   before adding new ones, so regenerating the deck leaves no orphaned cards.
+- **Queue order.** Cards are stored ranked by `${featureId}:${mode}`, so due and
+  new cards would otherwise run identify and locate for a feature back to back.
+  `buildQueue` finishes with a spacing pass that keeps the two modes of a feature
+  apart while preserving order as far as possible.
 - **PMTiles byte serving.** The custom Pages domain is proxied by Cloudflare,
   which mishandles `Range` requests — it can return the whole file, or fail under
   concurrent tile requests — which breaks pmtiles' `FetchSource`.

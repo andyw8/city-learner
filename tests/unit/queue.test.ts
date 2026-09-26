@@ -53,4 +53,30 @@ describe('buildQueue', () => {
     const cards = [card('a', 'identify'), card('b', 'locate')]
     expect(buildQueue(cards, { now, mode: 'locate' }).map((entry) => entry.id)).toEqual(['b'])
   })
+
+  it('spaces the two modes of a feature apart', () => {
+    const cards = [
+      card('a:identify', 'identify', { featureId: 'a' }),
+      card('a:locate', 'locate', { featureId: 'a' }),
+      card('b:identify', 'identify', { featureId: 'b' }),
+      card('b:locate', 'locate', { featureId: 'b' }),
+    ]
+    expect(buildQueue(cards, { now }).map((entry) => entry.id)).toEqual([
+      'a:identify',
+      'b:identify',
+      'a:locate',
+      'b:locate',
+    ])
+  })
+
+  it('leaves an unavoidable pair in order', () => {
+    const cards = [
+      card('a:identify', 'identify', { featureId: 'a' }),
+      card('a:locate', 'locate', { featureId: 'a' }),
+    ]
+    expect(buildQueue(cards, { now }).map((entry) => entry.id)).toEqual([
+      'a:identify',
+      'a:locate',
+    ])
+  })
 })
