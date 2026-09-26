@@ -37,6 +37,28 @@ describe('card store', () => {
     expect(await db.cards.count()).toBe(2)
   })
 
+  it('prunes cards for features no longer in the deck', async () => {
+    await syncCards(deck, now)
+
+    const nextDeck = parseDeck({
+      city: 'Test',
+      version: 2,
+      features: [
+        {
+          id: 'f2',
+          name: 'F2',
+          category: 'road',
+          description: '',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+        },
+      ],
+    })
+    await syncCards(nextDeck, now)
+
+    const ids = (await loadCards()).map((card) => card.id).sort()
+    expect(ids).toEqual(['f2:identify', 'f2:locate'])
+  })
+
   it('persists a review', async () => {
     await syncCards(deck, now)
     const card = (await loadCards()).find((entry) => entry.mode === 'identify')!

@@ -1,7 +1,7 @@
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { Category, Deck, Feature, Mode } from '../deck/types'
 import type { Card } from '../srs/types'
-import { el } from './dom'
+import { el, statTile } from './dom'
 import { presentIdentify } from './identify'
 import { presentLocate } from './locate'
 
@@ -37,6 +37,8 @@ export function runSession(
   let index = 0
   let stopped = false
   let current: Presentation | undefined
+  let answered = 0
+  let correctCount = 0
 
   const run = async (): Promise<void> => {
     for (; index < items.length; index++) {
@@ -54,6 +56,9 @@ export function runSession(
       current = undefined
       if (stopped) return
 
+      answered++
+      if (correct) correctCount++
+
       await options.onAnswer?.(item, correct)
     }
 
@@ -61,9 +66,20 @@ export function runSession(
 
     if (window.cityLearner) window.cityLearner.current = undefined
     map.getCanvas().style.cursor = ''
-    panel.replaceChildren(
+
+    const content: (Node | string)[] = [
       el('h2', { textContent: options.finishMessage ?? 'Session complete' }),
-    )
+    ]
+    if (answered > 0) {
+      content.push(
+        el('div', { className: 'stats' }, [
+          statTile('Answered', answered),
+          statTile('Correct', correctCount),
+          statTile('Incorrect', answered - correctCount),
+        ]),
+      )
+    }
+    panel.replaceChildren(...content)
   }
 
   void run()

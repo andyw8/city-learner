@@ -170,7 +170,7 @@ tests/
 5. **Mode B** — click-to-locate and geometry distance scoring.
 6. **SRS** — FSRS scheduling, session queue, persistence across reloads. ✅
 7. **Real deck** — Overpass + curation script producing the Toronto deck. ✅
-8. **Polish** — progress dashboard, per-category tolerances, settings, session summary.
+8. **Polish** — progress dashboard, per-category tolerances, settings, session summary. ✅
 
 ## Non-goals (v1)
 
@@ -226,4 +226,8 @@ tests/
   in review, due now, and learned per category) using `srs/stats.ts`, which joins
   the deck to stored cards. Locate tolerances are configurable per category in
   Settings; `checkLocate` accepts overrides and sessions pass the saved values.
+- **Session summary.** `runSession` counts answered/correct and renders a
+  summary (`.stats`) when a session finishes, alongside the finish message.
+- **Deck sync.** `syncCards` deletes cards whose feature is no longer in the deck
+  before adding new ones, so regenerating the deck leaves no orphaned cards.
 

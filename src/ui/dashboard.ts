@@ -1,25 +1,18 @@
 import type { Deck } from '../deck/types'
 import { summarize } from '../srs/stats'
 import { loadCards } from '../srs/store'
-import { el } from './dom'
-
-function stat(label: string, value: number | string): HTMLElement {
-  return el('div', { className: 'stat' }, [
-    el('span', { className: 'stat-value', textContent: String(value) }),
-    el('span', { className: 'stat-label', textContent: label }),
-  ])
-}
+import { el, statTile } from './dom'
 
 export async function renderDashboard(panel: HTMLElement, deck: Deck): Promise<void> {
   const cards = await loadCards()
   const stats = summarize(deck, cards, new Date())
 
   const totals = el('div', { className: 'stats' }, [
-    stat('Cards', stats.total),
-    stat('Due now', stats.due),
-    stat('New', stats.fresh),
-    stat('Learning', stats.learning),
-    stat('In review', stats.review),
+    statTile('Cards', stats.total),
+    statTile('Due now', stats.due),
+    statTile('New', stats.fresh),
+    statTile('Learning', stats.learning),
+    statTile('In review', stats.review),
   ])
 
   const categories = el(

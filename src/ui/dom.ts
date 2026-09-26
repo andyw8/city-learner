@@ -8,3 +8,10 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   node.append(...children)
   return node
 }
+
+export function statTile(label: string, value: number | string): HTMLElement {
+  return el('div', { className: 'stat' }, [
+    el('span', { className: 'stat-value', textContent: String(value) }),
+    el('span', { className: 'stat-label', textContent: label }),
+  ])
+}

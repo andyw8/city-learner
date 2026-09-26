@@ -167,3 +167,20 @@ test('progress tab summarises the deck', async ({ page }) => {
   await expect(page.locator('.stats').first()).toBeVisible()
   await expect(page.locator('.by-category .category')).toHaveCount(4)
 })
+
+test('a finished review shows a session summary', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await page.locator('#new-limit').fill('1')
+  await page.getByRole('button', { name: 'Save' }).click()
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
+  await page.locator(`button[data-feature-id="${featureId}"]`).click()
+  await page.getByRole('button', { name: 'Next' }).click()
+
+  await expect(page.locator('#panel .stats')).toContainText('Answered')
+  await expect(page.locator('#panel .stats')).toContainText('Correct')
+})
