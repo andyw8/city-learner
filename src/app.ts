@@ -125,7 +125,9 @@ export async function startApp(root: HTMLElement): Promise<void> {
 
   const runAction = (action: Action): void => {
     for (const button of actionButtons) {
-      button.classList.toggle('active', button.dataset.action === action)
+      const active = button.dataset.action === action
+      button.classList.toggle('active', active)
+      button.setAttribute('aria-pressed', String(active))
     }
     void actions[action]()
   }

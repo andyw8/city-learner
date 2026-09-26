@@ -12,11 +12,14 @@ body,
 body {
   font-family: system-ui, -apple-system, sans-serif;
   color: #1a1a1a;
+  -webkit-text-size-adjust: 100%;
 }
 
 #app {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
 }
 
 header {
@@ -24,7 +27,12 @@ header {
   align-items: baseline;
   gap: 1rem;
   padding: 0.75rem 1rem;
+  padding-top: max(0.75rem, env(safe-area-inset-top));
   border-bottom: 1px solid #ddd;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 header h1 {
@@ -157,7 +165,7 @@ header p {
 
 .settings input {
   padding: 0.4rem 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1rem;
   border: 1px solid #bbb;
   border-radius: 6px;
 }
@@ -210,4 +218,49 @@ header p {
   justify-content: space-between;
   gap: 1rem;
   min-width: 160px;
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  header p {
+    display: none;
+  }
+
+  .modes {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .modes button {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+
+  #app main {
+    flex-direction: column;
+  }
+
+  #map {
+    flex: 1;
+  }
+
+  #panel {
+    width: auto;
+    max-height: 45dvh;
+    border-left: none;
+    border-top: 1px solid #ddd;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .options button,
+  .next,
+  .settings button {
+    min-height: 44px;
+  }
 }

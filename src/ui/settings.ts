@@ -9,6 +9,7 @@ function toleranceField(category: Category, value: number): { label: HTMLElement
     min: '1',
     max: '5000',
     value: String(value),
+    inputMode: 'numeric',
   })
   input.dataset.category = category
   return {
@@ -30,6 +31,7 @@ export async function renderSettings(
     min: '0',
     max: '500',
     value: String(settings.newLimit),
+    inputMode: 'numeric',
   })
 
   const fields = CATEGORIES.map((category) =>

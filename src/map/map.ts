@@ -1,4 +1,4 @@
-import { Map as MapLibreMap, addProtocol, setWorkerUrl } from 'maplibre-gl'
+import { Map as MapLibreMap, NavigationControl, addProtocol, setWorkerUrl } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { createPmtilesProtocol } from './pmtiles'
 import { basemapStyle } from './style'
@@ -17,7 +17,7 @@ function configureMaplibre(): void {
 export function createMap(container: HTMLElement): MapLibreMap {
   configureMaplibre()
 
-  return new MapLibreMap({
+  const map = new MapLibreMap({
     container,
     style: basemapStyle(),
     center: TORONTO_CENTER,
@@ -25,4 +25,9 @@ export function createMap(container: HTMLElement): MapLibreMap {
     minZoom: 9,
     maxZoom: 17,
   })
+
+  map.addControl(new NavigationControl({ showCompass: false }), 'top-right')
+  map.touchZoomRotate.disableRotation()
+
+  return map
 }

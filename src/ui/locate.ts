@@ -74,7 +74,7 @@ export function presentLocate(
   panel.replaceChildren(
     el('h2', { textContent: `Where is ${feature.name}?` }),
     el('p', { className: 'prompt-description', textContent: feature.description }),
-    el('p', { className: 'hint', textContent: 'Click the map to place your answer.' }),
+    el('p', { className: 'hint', textContent: 'Tap the map to place your answer.' }),
     feedback,
     nextButton,
   )
