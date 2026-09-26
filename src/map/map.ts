@@ -1,6 +1,6 @@
 import { Map as MapLibreMap, addProtocol, setWorkerUrl } from 'maplibre-gl'
-import { Protocol } from 'pmtiles'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { createPmtilesProtocol } from './pmtiles'
 import { basemapStyle } from './style'
 
 export const TORONTO_CENTER: [number, number] = [-79.3832, 43.6532]
@@ -9,7 +9,7 @@ let configured = false
 
 function configureMaplibre(): void {
   if (configured) return
-  addProtocol('pmtiles', new Protocol().tile)
+  addProtocol('pmtiles', createPmtilesProtocol().tile)
   setWorkerUrl(`${import.meta.env.BASE_URL}maplibre-gl-worker.mjs`)
   configured = true
 }

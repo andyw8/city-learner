@@ -109,6 +109,11 @@ Pages uses **GitHub Actions** as its source, and the repository is public so
 Pages and Actions are available without a paid plan. Project sites are served
 under the account's custom Pages domain (`andywaite.com`).
 
+The custom domain sits behind a proxy that does not reliably honour HTTP range
+requests, so the app registers a small `HttpRangeSource` for pmtiles
+(`src/map/pmtiles.ts`) that slices a full response itself when the host ignores
+`Range`. This keeps the basemap working locally and behind such proxies.
+
 ## Attribution and licensing
 
 Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors,
