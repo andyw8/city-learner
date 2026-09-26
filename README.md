@@ -17,7 +17,7 @@ header; each city's spaced-repetition progress is tracked separately.
 Each `(feature, mode)` pair is an independent card, so a feature counts as
 learned only once it can be both recognised and placed. A **Review** session
 serves due and new cards through FSRS; **Identify** and **Locate** run
-unscheduled practice over the whole deck.
+unscheduled practice over the whole deck. The app opens on the **Identify** tab.
 
 ## Getting started
 
@@ -84,8 +84,9 @@ city is `toronto`). It:
 5. writes a deck validated with the app's own Zod schema.
 
 Responses are cached under `scripts/.cache/` (gitignored, keyed by query hash);
-pass `--refresh` to refetch. The generated deck is committed so the app and tests
-run offline.
+pass `--refresh` to refetch. The generated deck is committed so no build step is
+needed to run the app or tests; the basemap itself is fetched from OpenFreeMap at
+runtime.
 
 ## Remote services
 
