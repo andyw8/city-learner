@@ -84,8 +84,7 @@ run offline.
 
 ## Remote services
 
-The app is otherwise offline-capable; these are the only external services it
-uses.
+The app has no backend; these are the only external services it uses.
 
 | Service | When | Purpose |
 | --- | --- | --- |

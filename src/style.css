@@ -144,3 +144,31 @@ header p {
   font-size: 0.85rem;
   color: #666;
 }
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings label {
+  font-size: 0.9rem;
+}
+
+.settings input {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.95rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
+.settings button {
+  align-self: flex-start;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}

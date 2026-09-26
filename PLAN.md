@@ -149,11 +149,12 @@ data/
   tiles/toronto.pmtiles     # gitignored; see fetch-tiles.sh
 src/
   main.ts app.ts window.d.ts style.css
+  settings.ts
   deck/{types.ts,load.ts,geometry.ts,choices.ts,distance.ts}
   db/schema.ts
   srs/{types.ts,scheduler.ts,queue.ts,store.ts}
   map/{map.ts,style.ts,highlight.ts,labels.ts,view.ts}
-  ui/{dom.ts,session.ts,identify.ts,locate.ts}
+  ui/{dom.ts,session.ts,identify.ts,locate.ts,settings.ts}
 tests/
   unit/...
   e2e/...
@@ -169,7 +170,7 @@ tests/
 5. **Mode B** — click-to-locate and geometry distance scoring.
 6. **SRS** — FSRS scheduling, session queue, persistence across reloads. ✅
 7. **Real deck** — Overpass + curation script producing the Toronto deck. ✅
-8. **Polish** — progress dashboard, per-category tolerances, settings, offline PMTiles.
+8. **Polish** — progress dashboard, per-category tolerances, settings, session summary.
 
 ## Non-goals (v1)
 
@@ -177,6 +178,7 @@ tests/
 - No user accounts or cross-device sync.
 - No multi-city UI (city stays a data parameter).
 - No free-text answering.
+- No offline/PWA mode; the basemap needs the network for label glyphs and the sprite.
 
 ## Risks / open questions
 
@@ -216,4 +218,8 @@ tests/
   build script imports `parseDeck` from `src/` so generated output is validated
   by the same Zod schema the app loads. Results are cached by query hash; use
   `--refresh` to refetch from Overpass.
+- **Settings.** The `meta` table (Dexie schema v2) holds a single `settings`
+  row. `loadSettings` falls back to defaults and ignores malformed data, while
+  `saveSettings` validates with Zod. The daily new-card limit feeds `buildQueue`;
+  the Settings tab writes it and returns to Review.
 

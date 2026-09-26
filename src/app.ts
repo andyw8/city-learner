@@ -3,11 +3,13 @@ import type { Mode } from './deck/types'
 import { addGuessLayer, addHighlightLayers, clearGuess, clearHighlight } from './map/highlight'
 import { setLabelsVisible } from './map/labels'
 import { createMap } from './map/map'
+import { loadSettings, saveSettings } from './settings'
 import { buildQueue } from './srs/queue'
 import { applyReview, loadCards, syncCards } from './srs/store'
 import { runSession, type ReviewItem, type SessionMode } from './ui/session'
+import { renderSettings } from './ui/settings'
 
-type Action = 'review' | Mode
+type Action = 'review' | Mode | 'settings'
 
 export async function startApp(root: HTMLElement): Promise<void> {
   root.innerHTML = `
@@ -18,6 +20,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
         <button type="button" data-action="review">Review</button>
         <button type="button" data-action="identify">Identify</button>
         <button type="button" data-action="locate">Locate</button>
+        <button type="button" data-action="settings">Settings</button>
       </nav>
     </header>
     <main>
@@ -59,7 +62,12 @@ export async function startApp(root: HTMLElement): Promise<void> {
   const startReview = async (mode?: Mode): Promise<void> => {
     await syncCards(deck)
     const cards = await loadCards()
-    const items: ReviewItem[] = buildQueue(cards, { now: new Date(), mode }).map((card) => {
+    const settings = await loadSettings()
+    const items: ReviewItem[] = buildQueue(cards, {
+      now: new Date(),
+      mode,
+      newLimit: settings.newLimit,
+    }).map((card) => {
       const feature = features.get(card.featureId)
       if (!feature) throw new Error(`Unknown feature: ${card.featureId}`)
       return { feature, mode: card.mode, card }
@@ -74,6 +82,18 @@ export async function startApp(root: HTMLElement): Promise<void> {
     })
   }
 
+  const startSettings = (): void => {
+    session?.stop()
+    session = undefined
+    clearHighlight(map)
+    clearGuess(map)
+    setLabelsVisible(map, false)
+    void renderSettings(panel, async (settings) => {
+      await saveSettings(settings)
+      runAction('review')
+    })
+  }
+
   const startPractice = (mode: Mode): void => {
     begin({
       items: deck.features.map((feature) => ({ feature, mode })),
@@ -85,6 +105,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
     review: () => startReview(),
     identify: () => startPractice('identify'),
     locate: () => startPractice('locate'),
+    settings: startSettings,
   }
 
   const runAction = (action: Action): void => {

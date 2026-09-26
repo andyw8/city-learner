@@ -138,3 +138,22 @@ test('reviews are persisted to IndexedDB across reloads', async ({ page }) => {
   await page.waitForFunction(() => window.cityLearner?.current !== undefined)
   expect(await reviewedCount(page)).toBeGreaterThan(0)
 })
+
+test('settings persist across reloads', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  await page.getByRole('button', { name: 'Settings' }).click()
+  const input = page.locator('#new-limit')
+  await expect(input).toBeVisible()
+  await input.fill('3')
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await expect(input).toHaveValue('3')
+
+  await page.reload()
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await expect(page.locator('#new-limit')).toHaveValue('3')
+})
