@@ -172,3 +172,42 @@ header p {
   color: #fff;
   cursor: pointer;
 }
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.by-category {
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.by-category .stat-value {
+  font-size: 1rem;
+}
+
+.category {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 160px;
+}

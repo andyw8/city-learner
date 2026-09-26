@@ -1,5 +1,21 @@
-import { loadSettings, type Settings } from '../settings'
+import { CATEGORIES, type Category } from '../deck/types'
+import { loadSettings, type Settings, type Tolerances } from '../settings'
 import { el } from './dom'
+
+function toleranceField(category: Category, value: number): { label: HTMLElement; input: HTMLInputElement } {
+  const input = el('input', {
+    id: `tolerance-${category}`,
+    type: 'number',
+    min: '1',
+    max: '5000',
+    value: String(value),
+  })
+  input.dataset.category = category
+  return {
+    label: el('label', { htmlFor: `tolerance-${category}` }, [`${category} tolerance (m)`]),
+    input,
+  }
+}
 
 export async function renderSettings(
   panel: HTMLElement,
@@ -8,7 +24,7 @@ export async function renderSettings(
   const settings = await loadSettings()
   panel.innerHTML = ''
 
-  const input = el('input', {
+  const newLimit = el('input', {
     id: 'new-limit',
     type: 'number',
     min: '0',
@@ -16,16 +32,25 @@ export async function renderSettings(
     value: String(settings.newLimit),
   })
 
+  const fields = CATEGORIES.map((category) =>
+    toleranceField(category, settings.tolerances[category]),
+  )
+
   const form = el('form', { className: 'settings' }, [
     el('h2', {}, ['Settings']),
     el('label', { htmlFor: 'new-limit' }, ['New cards per day']),
-    input,
+    newLimit,
+    el('p', { className: 'hint', textContent: 'Locate tolerance by category:' }),
+    ...fields.flatMap(({ label, input }) => [label, input]),
     el('button', { type: 'submit' }, ['Save']),
   ])
 
   form.addEventListener('submit', (event) => {
     event.preventDefault()
-    void onSave({ newLimit: Number(input.value) })
+    const tolerances = Object.fromEntries(
+      fields.map(({ input }) => [input.dataset.category, Number(input.value)]),
+    ) as Tolerances
+    void onSave({ newLimit: Number(newLimit.value), tolerances })
   })
 
   panel.append(form)

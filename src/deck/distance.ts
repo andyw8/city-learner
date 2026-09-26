@@ -87,8 +87,12 @@ export function distanceToGeometry(point: Position, geometry: Geometry): number 
   }
 }
 
-export function toleranceFor(feature: Feature): number {
-  return feature.toleranceM ?? DEFAULT_TOLERANCE_M[feature.category]
+export function toleranceFor(
+  feature: Feature,
+  overrides?: Partial<Record<Category, number>>,
+): number {
+  if (feature.toleranceM !== undefined) return feature.toleranceM
+  return overrides?.[feature.category] ?? DEFAULT_TOLERANCE_M[feature.category]
 }
 
 export interface LocateResult {
@@ -97,8 +101,12 @@ export interface LocateResult {
   correct: boolean
 }
 
-export function checkLocate(point: Position, feature: Feature): LocateResult {
+export function checkLocate(
+  point: Position,
+  feature: Feature,
+  overrides?: Partial<Record<Category, number>>,
+): LocateResult {
   const distanceM = distanceToGeometry(point, feature.geometry)
-  const toleranceM = toleranceFor(feature)
+  const toleranceM = toleranceFor(feature, overrides)
   return { distanceM, toleranceM, correct: distanceM <= toleranceM }
 }

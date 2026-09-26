@@ -152,9 +152,9 @@ src/
   settings.ts
   deck/{types.ts,load.ts,geometry.ts,choices.ts,distance.ts}
   db/schema.ts
-  srs/{types.ts,scheduler.ts,queue.ts,store.ts}
+  srs/{types.ts,scheduler.ts,queue.ts,store.ts,stats.ts}
   map/{map.ts,style.ts,highlight.ts,labels.ts,view.ts}
-  ui/{dom.ts,session.ts,identify.ts,locate.ts,settings.ts}
+  ui/{dom.ts,session.ts,identify.ts,locate.ts,settings.ts,dashboard.ts}
 tests/
   unit/...
   e2e/...
@@ -222,4 +222,8 @@ tests/
   row. `loadSettings` falls back to defaults and ignores malformed data, while
   `saveSettings` validates with Zod. The daily new-card limit feeds `buildQueue`;
   the Settings tab writes it and returns to Review.
+- **Dashboard and tolerances.** The Progress tab summarises cards (new, learning,
+  in review, due now, and learned per category) using `srs/stats.ts`, which joins
+  the deck to stored cards. Locate tolerances are configurable per category in
+  Settings; `checkLocate` accepts overrides and sessions pass the saved values.
 

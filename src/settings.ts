@@ -1,14 +1,21 @@
 import { z } from 'zod'
+import { DEFAULT_TOLERANCE_M } from './deck/distance'
+import { CATEGORIES } from './deck/types'
 import { db } from './db/schema'
 import { DEFAULT_NEW_LIMIT } from './srs/queue'
 
 export const settingsSchema = z.object({
   newLimit: z.number().int().min(0).max(500),
+  tolerances: z.record(z.enum(CATEGORIES), z.number().positive()),
 })
 
 export type Settings = z.infer<typeof settingsSchema>
+export type Tolerances = Settings['tolerances']
 
-export const DEFAULT_SETTINGS: Settings = { newLimit: DEFAULT_NEW_LIMIT }
+export const DEFAULT_SETTINGS: Settings = {
+  newLimit: DEFAULT_NEW_LIMIT,
+  tolerances: DEFAULT_TOLERANCE_M,
+}
 
 const SETTINGS_KEY = 'settings'
 

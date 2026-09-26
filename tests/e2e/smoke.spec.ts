@@ -157,3 +157,13 @@ test('settings persist across reloads', async ({ page }) => {
   await page.getByRole('button', { name: 'Settings' }).click()
   await expect(page.locator('#new-limit')).toHaveValue('3')
 })
+
+test('progress tab summarises the deck', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current !== undefined)
+
+  await page.getByRole('button', { name: 'Progress' }).click()
+  await expect(page.locator('#panel h2')).toHaveText('Progress')
+  await expect(page.locator('.stats').first()).toBeVisible()
+  await expect(page.locator('.by-category .category')).toHaveCount(4)
+})

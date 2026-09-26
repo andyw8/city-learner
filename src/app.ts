@@ -7,9 +7,10 @@ import { loadSettings, saveSettings } from './settings'
 import { buildQueue } from './srs/queue'
 import { applyReview, loadCards, syncCards } from './srs/store'
 import { runSession, type ReviewItem, type SessionMode } from './ui/session'
+import { renderDashboard } from './ui/dashboard'
 import { renderSettings } from './ui/settings'
 
-type Action = 'review' | Mode | 'settings'
+type Action = 'review' | Mode | 'settings' | 'progress'
 
 export async function startApp(root: HTMLElement): Promise<void> {
   root.innerHTML = `
@@ -20,6 +21,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
         <button type="button" data-action="review">Review</button>
         <button type="button" data-action="identify">Identify</button>
         <button type="button" data-action="locate">Locate</button>
+        <button type="button" data-action="progress">Progress</button>
         <button type="button" data-action="settings">Settings</button>
       </nav>
     </header>
@@ -37,6 +39,8 @@ export async function startApp(root: HTMLElement): Promise<void> {
 
   const deck = await loadDeck('/decks/toronto.json')
   deckLabel.textContent = `${deck.city} — ${deck.features.length} features`
+
+  let settings = await loadSettings()
 
   const map = createMap(mapContainer)
   window.cityLearner = { map, deck }
@@ -56,13 +60,13 @@ export async function startApp(root: HTMLElement): Promise<void> {
     session = runSession(map, deck, panel, options.items, {
       onAnswer: options.onAnswer,
       finishMessage: options.finishMessage,
+      tolerances: settings.tolerances,
     })
   }
 
   const startReview = async (mode?: Mode): Promise<void> => {
     await syncCards(deck)
     const cards = await loadCards()
-    const settings = await loadSettings()
     const items: ReviewItem[] = buildQueue(cards, {
       now: new Date(),
       mode,
@@ -82,16 +86,26 @@ export async function startApp(root: HTMLElement): Promise<void> {
     })
   }
 
-  const startSettings = (): void => {
+  const startPanelView = (): void => {
     session?.stop()
     session = undefined
     clearHighlight(map)
     clearGuess(map)
     setLabelsVisible(map, false)
-    void renderSettings(panel, async (settings) => {
-      await saveSettings(settings)
+  }
+
+  const startSettings = (): void => {
+    startPanelView()
+    void renderSettings(panel, async (next) => {
+      await saveSettings(next)
+      settings = next
       runAction('review')
     })
+  }
+
+  const startProgress = (): void => {
+    startPanelView()
+    void renderDashboard(panel, deck)
   }
 
   const startPractice = (mode: Mode): void => {
@@ -106,6 +120,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
     identify: () => startPractice('identify'),
     locate: () => startPractice('locate'),
     settings: startSettings,
+    progress: startProgress,
   }
 
   const runAction = (action: Action): void => {

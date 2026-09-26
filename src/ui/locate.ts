@@ -1,6 +1,6 @@
 import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl'
 import { checkLocate } from '../deck/distance'
-import type { Deck, Feature, Position } from '../deck/types'
+import type { Category, Deck, Feature, Position } from '../deck/types'
 import { clearGuess, clearHighlight, setGuess, setHighlight } from '../map/highlight'
 import { setLabelsVisible } from '../map/labels'
 import { fitDeck } from '../map/view'
@@ -16,6 +16,7 @@ export function presentLocate(
   deck: Deck,
   panel: HTMLElement,
   feature: Feature,
+  tolerances?: Partial<Record<Category, number>>,
 ): Presentation {
   let resolvePromise: (correct: boolean) => void = () => {}
   const promise = new Promise<boolean>((resolve) => {
@@ -51,7 +52,7 @@ export function presentLocate(
     map.getCanvas().style.cursor = ''
 
     const point: Position = [event.lngLat.lng, event.lngLat.lat]
-    const located = checkLocate(point, feature)
+    const located = checkLocate(point, feature, tolerances)
     result = located.correct
 
     setGuess(map, point, located.correct)

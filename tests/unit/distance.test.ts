@@ -105,6 +105,10 @@ describe('toleranceFor', () => {
   it('prefers an explicit tolerance', () => {
     expect(toleranceFor(feature({ category: 'road', toleranceM: 42 }))).toBe(42)
   })
+
+  it('applies a per-category override', () => {
+    expect(toleranceFor(feature({ category: 'road' }), { road: 999 })).toBe(999)
+  })
 })
 
 describe('checkLocate', () => {
@@ -118,5 +122,15 @@ describe('checkLocate', () => {
 
     const far = checkLocate([-79.42, 43.68], target)
     expect(far.correct).toBe(false)
+  })
+
+  it('honours a tolerance override', () => {
+    const target = feature({
+      category: 'landmark',
+      geometry: { type: 'Point', coordinates: cnTower },
+    })
+    const click: Position = [-79.3873, 43.6427]
+    expect(checkLocate(click, target, { landmark: 1 }).correct).toBe(false)
+    expect(checkLocate(click, target, { landmark: 1000 }).correct).toBe(true)
   })
 })
