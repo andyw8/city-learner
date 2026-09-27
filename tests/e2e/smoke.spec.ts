@@ -106,6 +106,7 @@ test('mode A: free text is the default and accepts a correct name', async ({ pag
     'aria-pressed',
     'true',
   )
+  await expect(page.locator('#panel h2')).toHaveText(/^What is the highlighted .+\?$/)
 
   const name = await currentFeatureName(page)
   await page.getByRole('textbox').fill(name)
@@ -161,6 +162,7 @@ test('mode A: switching to multiple choice shows options', async ({ page }) => {
     'aria-pressed',
     'true',
   )
+  await expect(page.locator('#panel h2')).toHaveText('Which of these is highlighted?')
 })
 
 test('mode A: the answer mode resets to free text on the next question', async ({ page }) => {

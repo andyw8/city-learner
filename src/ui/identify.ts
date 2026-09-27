@@ -140,7 +140,15 @@ export function presentIdentify(
     }
   }
 
+  const heading = el('h2')
+
   function render(): void {
+    // Naming the kind helps free text, but would give away the answer when the
+    // choices are on screen.
+    heading.textContent =
+      mode === 'free-text'
+        ? `What is the highlighted ${featureNoun(feature)}?`
+        : 'Which of these is highlighted?'
     body.replaceChildren()
     if (mode === 'free-text') renderFreeText()
     else renderMultipleChoice()
@@ -155,13 +163,7 @@ export function presentIdentify(
 
   render()
 
-  panel.replaceChildren(
-    el('h2', { textContent: `What is the highlighted ${featureNoun(feature)}?` }),
-    modeToggle,
-    body,
-    feedback,
-    nextButton,
-  )
+  panel.replaceChildren(heading, modeToggle, body, feedback, nextButton)
 
   return {
     promise,
