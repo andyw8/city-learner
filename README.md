@@ -4,6 +4,8 @@ A static web app for learning the geography of a city: major roads,
 neighbourhoods, rivers and lakes, and famous landmarks. Features are memorised
 with spaced repetition (FSRS) and tested in two directions.
 
+**[Live demo →](https://andywaite.com/city-learner/)**
+
 Decks ship for Toronto, Canada and Glasgow, Scotland. Switch cities from the
 header; each city's spaced-repetition progress is tracked separately.
 
@@ -102,7 +104,7 @@ fetching the basemap and static deck files.
 
 ## Deployment
 
-Live at **https://andywaite.com/city-learner/**.
+Live at **[andywaite.com/city-learner](https://andywaite.com/city-learner/)**.
 
 Pushing to `main` deploys via `.github/workflows/deploy.yml`: the workflow
 builds with `BASE_PATH=/city-learner/` and publishes `dist/` to GitHub Pages.
