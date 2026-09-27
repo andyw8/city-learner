@@ -20,20 +20,10 @@ describe('settings', () => {
     const settings = {
       newLimit: 25,
       tolerances: { ...DEFAULT_TOLERANCE_M, road: 100 },
-      identifyMode: 'multiple-choice' as const,
       city: 'glasgow',
     }
     await saveSettings(settings)
     expect(await loadSettings()).toEqual(settings)
-  })
-
-  it('defaults the identify mode to free text', async () => {
-    expect(DEFAULT_SETTINGS.identifyMode).toBe('free-text')
-    await db.meta.put({
-      key: 'settings',
-      value: { newLimit: 10, tolerances: DEFAULT_TOLERANCE_M },
-    })
-    expect((await loadSettings()).identifyMode).toBe('free-text')
   })
 
   it('rejects out-of-range values', async () => {

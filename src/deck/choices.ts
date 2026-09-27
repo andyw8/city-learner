@@ -1,3 +1,4 @@
+import { shuffle } from './shuffle'
 import type { Deck, Feature } from './types'
 
 export interface Choice {
@@ -24,19 +25,6 @@ function mulberry32(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
-}
-
-function shuffle<T>(items: T[], random: () => number): T[] {
-  const result = [...items]
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1))
-    const a = result[i]
-    const b = result[j]
-    if (a === undefined || b === undefined) continue
-    result[i] = b
-    result[j] = a
-  }
-  return result
 }
 
 export function buildChoices(deck: Deck, target: Feature, count = CHOICE_COUNT): Choice[] {

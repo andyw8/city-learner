@@ -1,6 +1,5 @@
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { Category, Deck, Feature, Mode } from '../deck/types'
-import type { IdentifyAnswerMode } from '../settings'
 import type { Card } from '../srs/types'
 import { el, statTile } from './dom'
 import { presentIdentify } from './identify'
@@ -26,8 +25,6 @@ export interface SessionOptions {
   onAnswer?: (item: ReviewItem, correct: boolean) => void | Promise<void>
   finishMessage?: string
   tolerances?: Partial<Record<Category, number>>
-  getIdentifyMode?: () => IdentifyAnswerMode
-  onIdentifyModeChange?: (mode: IdentifyAnswerMode) => void
 }
 
 export function runSession(
@@ -52,10 +49,7 @@ export function runSession(
 
       current =
         item.mode === 'identify'
-          ? presentIdentify(map, deck, panel, item.feature, {
-              mode: options.getIdentifyMode?.() ?? 'free-text',
-              onModeChange: options.onIdentifyModeChange ?? (() => {}),
-            })
+          ? presentIdentify(map, deck, panel, item.feature)
           : presentLocate(map, deck, panel, item.feature, options.tolerances)
 
       const correct = await current.promise

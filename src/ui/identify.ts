@@ -5,17 +5,15 @@ import { featureNoun } from '../deck/noun'
 import type { Deck, Feature } from '../deck/types'
 import { focusFeature, setHighlight } from '../map/highlight'
 import { setLabelsVisible } from '../map/labels'
-import {
-  IDENTIFY_MODE_LABELS,
-  IDENTIFY_MODES,
-  type IdentifyAnswerMode,
-} from '../settings'
 import { el } from './dom'
 import type { Presentation } from './session'
 
-export interface IdentifyOptions {
-  mode: IdentifyAnswerMode
-  onModeChange: (mode: IdentifyAnswerMode) => void
+export const IDENTIFY_MODES = ['free-text', 'multiple-choice'] as const
+export type IdentifyAnswerMode = (typeof IDENTIFY_MODES)[number]
+
+const IDENTIFY_MODE_LABELS: Record<IdentifyAnswerMode, string> = {
+  'free-text': 'Free text',
+  'multiple-choice': 'Multiple choice',
 }
 
 export function presentIdentify(
@@ -23,7 +21,6 @@ export function presentIdentify(
   deck: Deck,
   panel: HTMLElement,
   feature: Feature,
-  options: IdentifyOptions,
 ): Presentation {
   let resolvePromise: (correct: boolean) => void = () => {}
   const promise = new Promise<boolean>((resolve) => {
@@ -40,7 +37,8 @@ export function presentIdentify(
 
   let answered = false
   let result = false
-  let mode = options.mode
+  // Each question starts on free text; the toggle only affects this question.
+  let mode: IdentifyAnswerMode = 'free-text'
 
   const feedback = el('p', { className: 'feedback' })
   feedback.setAttribute('aria-live', 'polite')
@@ -151,7 +149,6 @@ export function presentIdentify(
 
   function selectMode(next: IdentifyAnswerMode): void {
     mode = next
-    options.onModeChange(next)
     if (!answered) render()
     else setModeButtons()
   }

@@ -1,5 +1,6 @@
 import { CITIES, findCity } from './deck/cities'
 import { featureById, loadDeck } from './deck/load'
+import { shuffle } from './deck/shuffle'
 import type { Mode } from './deck/types'
 import { addGuessLayer, addHighlightLayers, clearGuess, clearHighlight } from './map/highlight'
 import { setLabelsVisible } from './map/labels'
@@ -42,6 +43,15 @@ export async function startApp(root: HTMLElement): Promise<void> {
     throw new Error('Missing layout elements')
   }
 
+  // Capture clicks that arrive before the map (and its layers) are ready.
+  let pendingAction: Action | undefined
+  let handleAction: (action: Action) => void = (action) => {
+    pendingAction = action
+  }
+  for (const button of actionButtons) {
+    button.addEventListener('click', () => handleAction(button.dataset.action as Action))
+  }
+
   let settings = await loadSettings()
   const city = findCity(settings.city)
 
@@ -76,11 +86,6 @@ export async function startApp(root: HTMLElement): Promise<void> {
       onAnswer: options.onAnswer,
       finishMessage: options.finishMessage,
       tolerances: settings.tolerances,
-      getIdentifyMode: () => settings.identifyMode,
-      onIdentifyModeChange: (mode) => {
-        settings = { ...settings, identifyMode: mode }
-        void saveSettings(settings)
-      },
     })
   }
 
@@ -130,7 +135,7 @@ export async function startApp(root: HTMLElement): Promise<void> {
 
   const startPractice = (mode: Mode): void => {
     begin({
-      items: deck.features.map((feature) => ({ feature, mode })),
+      items: shuffle(deck.features).map((feature) => ({ feature, mode })),
       finishMessage: 'Session complete',
     })
   }
@@ -143,21 +148,36 @@ export async function startApp(root: HTMLElement): Promise<void> {
     progress: startProgress,
   }
 
+  let ready = false
+  let pending: Action | undefined
+
   const runAction = (action: Action): void => {
     for (const button of actionButtons) {
       const active = button.dataset.action === action
       button.classList.toggle('active', active)
       button.setAttribute('aria-pressed', String(active))
     }
+    if (window.cityLearner) window.cityLearner.current = undefined
+    if (!ready) {
+      pending = action
+      return
+    }
     void actions[action]()
+  }
+
+  handleAction = runAction
+  if (pendingAction !== undefined) {
+    const queued = pendingAction
+    pendingAction = undefined
+    runAction(queued)
   }
 
   map.once('style.load', () => {
     addHighlightLayers(map)
     addGuessLayer(map)
-    for (const button of actionButtons) {
-      button.addEventListener('click', () => runAction(button.dataset.action as Action))
-    }
-    runAction('identify')
+    ready = true
+    const initial = pending ?? 'identify'
+    pending = undefined
+    runAction(initial)
   })
 }

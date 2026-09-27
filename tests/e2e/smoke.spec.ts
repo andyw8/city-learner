@@ -117,10 +117,27 @@ test('mode A: free text tolerates a small typo', async ({ page }) => {
   await page.goto('/')
   await page.waitForFunction(() => window.cityLearner?.current?.mode === 'identify')
 
-  const name = await currentFeatureName(page)
-  await page.getByRole('textbox').fill(name.slice(1))
-  await page.getByRole('button', { name: 'Check' }).click()
-  await expect(page.locator('.feedback')).toContainText('Correct')
+  // Practice order is shuffled, and very short names have no typo tolerance,
+  // so answer a few until a name long enough to drop a character turns up.
+  for (let attempt = 0; attempt < 15; attempt++) {
+    const name = await currentFeatureName(page)
+    if (name.replaceAll(/\s/g, '').length >= 6) {
+      await page.getByRole('textbox').fill(name.slice(1))
+      await page.getByRole('button', { name: 'Check' }).click()
+      await expect(page.locator('.feedback')).toContainText('Correct')
+      return
+    }
+
+    const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
+    await page.getByRole('textbox').fill(name)
+    await page.getByRole('button', { name: 'Check' }).click()
+    await page.getByRole('button', { name: 'Next' }).click()
+    await page.waitForFunction(
+      (previous) => window.cityLearner?.current?.featureId !== previous,
+      featureId,
+    )
+  }
+  throw new Error('No feature long enough to test a typo')
 })
 
 test('mode A: a wrong free-text answer reveals the name', async ({ page }) => {
@@ -141,6 +158,22 @@ test('mode A: switching to multiple choice shows options', async ({ page }) => {
 
   await expect(page.locator('.options button')).toHaveCount(4)
   await expect(page.getByRole('button', { name: 'Multiple choice' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+})
+
+test('mode A: the answer mode resets to free text on the next question', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForFunction(() => window.cityLearner?.current?.mode === 'identify')
+  await chooseMultipleChoice(page)
+
+  const featureId = await page.evaluate(() => window.cityLearner!.current!.featureId)
+  await page.locator(`button[data-feature-id="${featureId}"]`).click()
+  await page.getByRole('button', { name: 'Next' }).click()
+
+  await expect(page.getByRole('textbox')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Free text' })).toHaveAttribute(
     'aria-pressed',
     'true',
   )

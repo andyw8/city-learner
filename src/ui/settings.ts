@@ -1,11 +1,5 @@
 import { CATEGORIES, type Category } from '../deck/types'
-import {
-  IDENTIFY_MODE_LABELS,
-  IDENTIFY_MODES,
-  loadSettings,
-  type Settings,
-  type Tolerances,
-} from '../settings'
+import { loadSettings, type Settings, type Tolerances } from '../settings'
 import { el } from './dom'
 
 function toleranceField(category: Category, value: number): { label: HTMLElement; input: HTMLInputElement } {
@@ -44,18 +38,10 @@ export async function renderSettings(
     toleranceField(category, settings.tolerances[category]),
   )
 
-  const identifyMode = el('select', { id: 'identify-mode' })
-  for (const value of IDENTIFY_MODES) {
-    identifyMode.append(el('option', { value, textContent: IDENTIFY_MODE_LABELS[value] }))
-  }
-  identifyMode.value = settings.identifyMode
-
   const form = el('form', { className: 'settings' }, [
     el('h2', {}, ['Settings']),
     el('label', { htmlFor: 'new-limit' }, ['New cards per day']),
     newLimit,
-    el('label', { htmlFor: 'identify-mode' }, ['Identify answers']),
-    identifyMode,
     el('p', { className: 'hint', textContent: 'Locate tolerance by category:' }),
     ...fields.flatMap(({ label, input }) => [label, input]),
     el('button', { type: 'submit' }, ['Save']),
@@ -69,7 +55,6 @@ export async function renderSettings(
     void onSave({
       newLimit: Number(newLimit.value),
       tolerances,
-      identifyMode: identifyMode.value as Settings['identifyMode'],
       city: settings.city,
     })
   })
